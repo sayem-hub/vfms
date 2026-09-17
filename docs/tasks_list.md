@@ -125,6 +125,13 @@
   - [x] Itemized trip expenses (Tolls, Parking, Daily Food Allowance / DA, Emergency Repairs)
   - [x] Live petty cash settlement balance calculator: $(\text{Advance Cash} - \text{Total Actual Expenses})$ with instant refundable/payable breakdown and submission to accounts
 
+- [x] **NZ Group Internal Enterprise Branding & Color Theme**
+  - [x] Integrated `nz-group.png` corporate logo in main header (preceding "VFMS") and in the footer
+  - [x] Admin Panel Provider brand logo, height, and Orange (`#FA5514` / `#ea580c`) theme configuration
+  - [x] Transformed Livewire v4 portals (Trip Requisition, Gate-Pass Terminal, Driver Field Portal) to match the dark slate & NZ Group orange aesthetic
+  - [x] Purged all marketing fluff/buzzwords to maintain an internal conglomerate operations tone
+  - [x] Updated English and Bengali localization packages to "NZ Group - VFMS"
+
 - [x] **Automated Test Suite for Portals**
   - [x] 18 Pest tests passing with 65 assertions (`php artisan test`)
 

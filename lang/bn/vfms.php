@@ -2,7 +2,7 @@
 
 return [
     // Navigation & Common
-    'app_name' => 'যানবাহন ও ফ্লিট ব্যবস্থাপনা সিস্টেম (VFMS)',
+    'app_name' => 'NZ Group - যানবাহন ও ফ্লিট ব্যবস্থাপনা সিস্টেম (VFMS)',
     'dashboard' => 'ড্যাশবোর্ড',
     'vehicles' => 'যানবাহন তালিকা',
     'drivers' => 'চালক / ড্রাইভারবৃন্দ',

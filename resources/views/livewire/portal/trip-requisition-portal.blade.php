@@ -1,20 +1,23 @@
 <div class="space-y-8">
     <!-- Header Banner -->
-    <div class="bg-gradient-to-r from-emerald-800 to-teal-700 rounded-2xl p-6 text-white shadow-md">
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 rounded-2xl p-6 text-white shadow-md border-l-4 border-orange-600">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <span class="inline-block px-3 py-1 bg-emerald-700/60 rounded-full text-xs font-semibold mb-2 tracking-wide uppercase">
-                    {{ app()->getLocale() === 'bn' ? 'ফ্যাক্টরি ও অফিস পরিবহন' : 'Factory & Transport Portal' }}
-                </span>
-                <h1 class="text-2xl sm:text-3xl font-bold">
+                <div class="flex items-center gap-2 mb-2">
+                    <img src="{{ asset('images/nz-group.png') }}" alt="NZ Group" class="h-6 w-auto bg-white/90 rounded px-1 py-0.5" />
+                    <span class="inline-block px-2.5 py-0.5 bg-orange-600/30 text-orange-200 border border-orange-500/40 rounded-full text-[11px] font-bold tracking-wide uppercase">
+                        {{ app()->getLocale() === 'bn' ? 'ফ্যাক্টরি ও অফিস পরিবহন' : 'Factory & Transport Operations' }}
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
                     {{ app()->getLocale() === 'bn' ? 'গাড়ি ও ট্রিপ রিকুইজিশন পোর্টাল' : 'Vehicle & Trip Requisition Portal' }}
                 </h1>
-                <p class="text-emerald-100 text-sm mt-1">
-                    {{ app()->getLocale() === 'bn' ? 'কর্মকর্তা, কর্মচারী ও রপ্তানি পণ্য পরিবহনের জন্য রিকুইজিশন দাখিল করুন' : 'Submit vehicle requisitions for official duty, staff commute, or export shipments' }}
+                <p class="text-slate-300 text-sm mt-1">
+                    {{ app()->getLocale() === 'bn' ? 'কর্মকর্তা, কর্মচারী ও রপ্তানি পণ্য পরিবহনের জন্য অভ্যন্তরীণ রিকুইজিশন দাখিল করুন' : 'Submit internal vehicle requisitions for official duty, staff commute, or export shipments' }}
                 </p>
             </div>
             <div>
-                <a href="#recent-requests" class="inline-flex items-center px-4 py-2 bg-white text-emerald-800 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-50 transition">
+                <a href="#recent-requests" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-sm font-bold shadow-sm transition">
                     📋 {{ app()->getLocale() === 'bn' ? 'আমার রিকুইজিশন সমূহ' : 'My Requisitions' }}
                 </a>
             </div>
@@ -37,15 +40,15 @@
                 </span>
                 <div class="flex flex-wrap gap-2">
                     <button type="button" wire:click="setPresetRoute('HO_TO_GZP')"
-                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-emerald-500 hover:text-emerald-700 rounded-lg font-medium shadow-2xs transition">
+                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
                         📍 গুলশান HO ➔ মাওনা কারখানা
                     </button>
                     <button type="button" wire:click="setPresetRoute('GZP_TO_CTG')"
-                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-emerald-500 hover:text-emerald-700 rounded-lg font-medium shadow-2xs transition">
+                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
                         🚢 মাওনা গাজিপুর ➔ চট্টগ্রাম অফ-ডক
                     </button>
                     <button type="button" wire:click="setPresetRoute('HO_TO_NKG')"
-                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-emerald-500 hover:text-emerald-700 rounded-lg font-medium shadow-2xs transition">
+                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
                         🏭 গুলশান HO ➔ কাঁচপুর স্পিনিং
                     </button>
                 </div>
@@ -58,7 +61,7 @@
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
                             {{ app()->getLocale() === 'bn' ? 'কোম্পানি' : 'Company' }} <span class="text-red-500">*</span>
                         </label>
-                        <select wire:model.live="company_id" class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2.5 border bg-white">
+                        <select wire:model.live="company_id" class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white">
                             @foreach($companies as $company)
                                 <option value="{{ $company->id }}">{{ $company->name }} ({{ $company->code }})</option>
                             @endforeach
@@ -70,7 +73,7 @@
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
                             {{ app()->getLocale() === 'bn' ? 'ফ্যাক্টরি / ইউনিট' : 'Factory Unit' }}
                         </label>
-                        <select wire:model="factory_unit_id" class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2.5 border bg-white">
+                        <select wire:model="factory_unit_id" class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white">
                             <option value="">-- {{ app()->getLocale() === 'bn' ? 'ইউনিট নির্বাচন করুন' : 'Select Unit' }} --</option>
                             @foreach($factoryUnits as $unit)
                                 <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->location_code }})</option>
@@ -86,7 +89,7 @@
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
                             {{ app()->getLocale() === 'bn' ? 'ট্রিপের ধরন' : 'Trip Type' }} <span class="text-red-500">*</span>
                         </label>
-                        <select wire:model="trip_type" class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2.5 border bg-white">
+                        <select wire:model="trip_type" class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white">
                             <option value="OFFICIAL_DUTY">Official Duty (অফিসিয়াল দায়িত্ব)</option>
                             <option value="EXPORT_SHIPMENT">Covered Van Export Shipment (রপ্তানি চালান)</option>
                             <option value="EMPLOYEE_COMMUTE">Employee Commute (কর্মচারী যাতায়াত)</option>
@@ -102,7 +105,7 @@
                             {{ app()->getLocale() === 'bn' ? 'যাত্রার সময়' : 'Departure Time' }} <span class="text-red-500">*</span>
                         </label>
                         <input type="datetime-local" wire:model="scheduled_start_time" 
-                               class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2.5 border bg-white" />
+                               class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white" />
                         @error('scheduled_start_time') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -114,7 +117,7 @@
                             {{ app()->getLocale() === 'bn' ? 'প্রস্থানস্থল (Origin)' : 'Origin Location' }} <span class="text-red-500">*</span>
                         </label>
                         <input type="text" wire:model="origin_name" placeholder="e.g. Corporate Head Office, Gulshan-2" 
-                               class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2.5 border bg-white" />
+                               class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white" />
                         @error('origin_name') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                     </div>
 
@@ -123,7 +126,7 @@
                             {{ app()->getLocale() === 'bn' ? 'গন্তব্যস্থল (Destination)' : 'Destination Location' }} <span class="text-red-500">*</span>
                         </label>
                         <input type="text" wire:model="destination_name" placeholder="e.g. Mawna Plant, Gazipur" 
-                               class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2.5 border bg-white" />
+                               class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white" />
                         @error('destination_name') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -134,7 +137,7 @@
                         {{ app()->getLocale() === 'bn' ? 'যাত্রার উদ্দেশ্য / বিবরণ' : 'Purpose & Details' }} <span class="text-red-500">*</span>
                     </label>
                     <textarea wire:model="purpose" rows="2" placeholder="{{ app()->getLocale() === 'bn' ? 'যাত্রার বিস্তারিত কারণ লিখুন...' : 'Enter trip purpose and details...' }}"
-                              class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2.5 border bg-white"></textarea>
+                              class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white"></textarea>
                     @error('purpose') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                 </div>
 
@@ -149,7 +152,7 @@
                                 {{ app()->getLocale() === 'bn' ? 'ইআরপি রিকুইজিশন / ইনডেন্ট নম্বর' : 'ERP Requisition / Indent No' }}
                             </label>
                             <input type="text" wire:model="erp_requisition_no" placeholder="e.g. ERP-IND-2026-9810"
-                                   class="w-full text-sm rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-2 border bg-white" />
+                                   class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2 border bg-white" />
                             @error('erp_requisition_no') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                         </div>
 
@@ -158,8 +161,8 @@
                                 {{ app()->getLocale() === 'bn' ? 'ইআরপি রিকুইজিশন ফাইল (PDF/ছবি)' : 'Upload ERP Copy (PDF/Image)' }}
                             </label>
                             <input type="file" wire:model="erp_requisition_copy" 
-                                   class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-                            <div wire:loading wire:target="erp_requisition_copy" class="text-xs text-emerald-600 mt-1">Uploading file...</div>
+                                   class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100" />
+                            <div wire:loading wire:target="erp_requisition_copy" class="text-xs text-orange-600 mt-1">Uploading file...</div>
                             @error('erp_requisition_copy') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                         </div>
                     </div>
@@ -168,7 +171,7 @@
                 <!-- Submit Button -->
                 <div class="pt-2 flex justify-end">
                     <button type="submit" wire:loading.attr="disabled"
-                            class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md shadow-emerald-200 transition flex items-center gap-2">
+                            class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold text-sm shadow-md shadow-orange-200 transition flex items-center gap-2">
                         <span wire:loading.remove wire:target="submitRequisition">
                             ✓ {{ app()->getLocale() === 'bn' ? 'রিকুইজিশন জমা দিন' : 'Submit Requisition' }}
                         </span>
@@ -190,15 +193,15 @@
                 </h3>
                 <ul class="text-xs text-slate-600 space-y-2 leading-relaxed">
                     <li class="flex items-start gap-2">
-                        <span class="text-emerald-600 font-bold">•</span>
+                        <span class="text-orange-600 font-bold">•</span>
                         <span>{{ app()->getLocale() === 'bn' ? 'যাত্রার অন্তত ২ ঘণ্টা পূর্বে রিকুইজিশন সাবমিট করুন।' : 'Submit requisition at least 2 hours prior to scheduled departure.' }}</span>
                     </li>
                     <li class="flex items-start gap-2">
-                        <span class="text-emerald-600 font-bold">•</span>
+                        <span class="text-orange-600 font-bold">•</span>
                         <span>{{ app()->getLocale() === 'bn' ? 'সিস্টেম স্বয়ংক্রিয়ভাবে ম্যাপ থেকে স্ট্যান্ডার্ড দূরত্ব হিসাব করে রাখবে।' : 'The system automatically pre-calculates the expected highway distance.' }}</span>
                     </li>
                     <li class="flex items-start gap-2">
-                        <span class="text-emerald-600 font-bold">•</span>
+                        <span class="text-orange-600 font-bold">•</span>
                         <span>{{ app()->getLocale() === 'bn' ? 'ট্রিপ অনুমোদিত হলে সিকিউরিটি গেট থেকে গাড়ি ছাড়পত্র পাবে।' : 'Gate pass will be issued by Security Gate once trip is approved.' }}</span>
                     </li>
                 </ul>
@@ -246,7 +249,7 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($recentRequisitions as $req)
                         <tr class="hover:bg-slate-50/50 transition">
-                            <td class="py-3 px-4 font-bold text-emerald-700">
+                            <td class="py-3 px-4 font-bold text-orange-700">
                                 {{ $req->requisition_no }}
                             </td>
                             <td class="py-3 px-4">
@@ -310,7 +313,7 @@
     @if($showSuccessModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-xl">
-                <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-4 font-bold">
+                <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-4 font-bold">
                     ✓
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-1">
@@ -319,11 +322,11 @@
                 <p class="text-xs text-slate-500 mb-4">
                     {{ app()->getLocale() === 'bn' ? 'আপনার রিকুইজিশন ট্র্যাকিং নম্বর:' : 'Tracking Requisition Number:' }}
                 </p>
-                <div class="bg-slate-100 border border-slate-200 rounded-xl py-3 px-4 text-emerald-700 font-mono font-bold text-base mb-6">
+                <div class="bg-slate-100 border border-slate-200 rounded-xl py-3 px-4 text-orange-700 font-mono font-bold text-base mb-6">
                     {{ $createdRequisitionNo }}
                 </div>
                 <button type="button" wire:click="$set('showSuccessModal', false)"
-                        class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition">
+                        class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-sm font-bold transition">
                     {{ app()->getLocale() === 'bn' ? 'ঠিক আছে (Close)' : 'OK, Close' }}
                 </button>
             </div>

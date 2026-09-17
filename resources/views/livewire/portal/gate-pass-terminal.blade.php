@@ -1,12 +1,15 @@
 <div class="space-y-8">
     <!-- Gate Header Banner -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-6 text-white shadow-md">
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 rounded-2xl p-6 text-white shadow-md border-l-4 border-orange-600">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <span class="inline-block px-3 py-1 bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 rounded-full text-xs font-semibold mb-2 uppercase tracking-wide">
-                    🛡️ {{ app()->getLocale() === 'bn' ? 'ফ্যাক্টরি নিরাপত্তা চেকপোস্ট' : 'Factory Security Checkpoint' }}
-                </span>
-                <h1 class="text-2xl sm:text-3xl font-bold">
+                <div class="flex items-center gap-2 mb-2">
+                    <img src="{{ asset('images/nz-group.png') }}" alt="NZ Group" class="h-6 w-auto bg-white/90 rounded px-1 py-0.5" />
+                    <span class="inline-block px-2.5 py-0.5 bg-orange-600/30 text-orange-200 border border-orange-500/40 rounded-full text-[11px] font-bold uppercase tracking-wide">
+                        🛡️ {{ app()->getLocale() === 'bn' ? 'ফ্যাক্টরি নিরাপত্তা চেকপোস্ট' : 'Factory Security Checkpoint' }}
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
                     {{ app()->getLocale() === 'bn' ? 'সিকিউরিটি গেট পাস টার্মিনাল' : 'Security Gate-Pass Terminal' }}
                 </h1>
                 <p class="text-slate-300 text-sm mt-1">
@@ -14,7 +17,7 @@
                 </p>
             </div>
             <div class="text-right">
-                <div class="text-2xl font-mono font-bold text-emerald-400">
+                <div class="text-2xl font-mono font-bold text-orange-400">
                     {{ now()->format('h:i A') }}
                 </div>
                 <div class="text-xs text-slate-400 font-medium">
@@ -51,7 +54,7 @@
             <div>
                 <input type="text" wire:model.live.debounce.300ms="searchQuery" 
                        placeholder="{{ app()->getLocale() === 'bn' ? 'গাড়ির নং / গেট পাস নং / ড্রাইভার নাম...' : 'Vehicle No / Gate Pass / Driver...' }}"
-                       class="w-full text-sm rounded-xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 p-3 border bg-slate-50 font-medium" />
+                       class="w-full text-sm rounded-xl border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-3 border bg-slate-50 font-medium" />
             </div>
 
             <!-- Active Trips Queue List -->
@@ -62,9 +65,9 @@
 
                 @forelse($activeGateTrips as $trip)
                     <button type="button" wire:click="selectTrip({{ $trip->id }})"
-                            class="w-full text-left p-3 rounded-xl border transition {{ $selectedTripId === $trip->id ? 'bg-indigo-50 border-indigo-400 shadow-xs' : 'bg-slate-50 hover:bg-slate-100 border-slate-200' }}">
+                            class="w-full text-left p-3 rounded-xl border transition {{ $selectedTripId === $trip->id ? 'bg-orange-50 border-orange-400 shadow-xs' : 'bg-slate-50 hover:bg-slate-100 border-slate-200' }}">
                         <div class="flex items-center justify-between">
-                            <span class="font-bold text-xs text-indigo-950">{{ $trip->vehicle->registration_no ?? 'Unassigned' }}</span>
+                            <span class="font-bold text-xs text-slate-900">{{ $trip->vehicle->registration_no ?? 'Unassigned' }}</span>
                             @php
                                 $badgeColor = match($trip->status) {
                                     'GATE_OUT', 'IN_TRIP' => 'bg-purple-100 text-purple-800',
@@ -133,7 +136,7 @@
                             </div>
                             <div class="text-xs text-slate-500">
                                 {{ app()->getLocale() === 'bn' ? 'গাড়ির বর্তমান ওডোমিটার:' : 'Current Odometer:' }} 
-                                <span class="font-mono font-bold text-emerald-700">{{ $selectedTrip->vehicle->current_odometer ?? 0 }} KM</span>
+                                <span class="font-mono font-bold text-orange-700">{{ $selectedTrip->vehicle->current_odometer ?? 0 }} KM</span>
                             </div>
                         </div>
 
@@ -154,7 +157,7 @@
                                     <div class="text-sm font-bold text-slate-900">{{ $selectedTrip->driver->name ?? 'N/A' }}</div>
                                     <div class="text-xs text-slate-600">
                                         {{ app()->getLocale() === 'bn' ? 'অফিস আইডি:' : 'Office ID:' }} 
-                                        <span class="font-mono font-bold text-indigo-700">{{ $selectedTrip->driver->office_id_card ?? 'N/A' }}</span>
+                                        <span class="font-mono font-bold text-orange-800">{{ $selectedTrip->driver->office_id_card ?? 'N/A' }}</span>
                                     </div>
                                     <div class="text-[11px] text-slate-500">📞 {{ $selectedTrip->driver->phone ?? 'N/A' }}</div>
                                 </div>
@@ -163,13 +166,13 @@
                     </div>
 
                     <!-- Route Summary -->
-                    <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-xl flex items-center justify-between text-xs">
+                    <div class="bg-slate-100/70 border border-slate-200 p-4 rounded-xl flex items-center justify-between text-xs">
                         <div>
                             <span class="text-slate-500 block text-[11px]">{{ app()->getLocale() === 'bn' ? 'প্রস্থানস্থল' : 'Origin' }}</span>
                             <span class="font-bold text-slate-800">{{ $selectedTrip->origin_name }}</span>
                         </div>
                         <div class="text-center px-4">
-                            <span class="text-indigo-600 font-bold">➔</span>
+                            <span class="text-orange-600 font-bold">➔</span>
                             @if($selectedTrip->expected_distance_km)
                                 <span class="block text-[10px] text-slate-500 font-mono">{{ $selectedTrip->expected_distance_km }} KM (Est)</span>
                             @endif
@@ -185,22 +188,22 @@
                         @if(in_array($selectedTrip->status, ['SUBMITTED', 'HOD_APPROVED', 'DISPATCHED']))
                             <!-- GATE OUT Section -->
                             <div class="space-y-4">
-                                <div class="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-                                    <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                                <div class="flex items-center gap-2 text-orange-800 font-bold text-sm">
+                                    <span class="w-3 h-3 rounded-full bg-orange-500 inline-block"></span>
                                     <span>{{ app()->getLocale() === 'bn' ? 'গাড়ি প্রস্থান রেকর্ড (Record Gate-Out)' : 'Record Gate-Out (Departure)' }}</span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
-                                            {{ app()->getLocale() === 'bn' ? 'প্রস্থানকালীন ওডোমিটার (KM)' : 'Departure Odometer (KM)' }} <span class="text-red-500">*</span>
+                                             {{ app()->getLocale() === 'bn' ? 'প্রস্থানকালীন ওডোমিটার (KM)' : 'Departure Odometer (KM)' }} <span class="text-red-500">*</span>
                                         </label>
                                         <input type="number" wire:model="start_odometer" 
-                                               class="w-full text-base font-mono font-bold rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 p-3 border bg-white" />
+                                               class="w-full text-base font-mono font-bold rounded-xl border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-3 border bg-white" />
                                         @error('start_odometer') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="flex items-end">
                                         <button type="button" wire:click="recordGateOut"
-                                                class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md shadow-emerald-200 transition flex items-center justify-center gap-2">
+                                                class="w-full py-3.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold text-sm shadow-md shadow-orange-200 transition flex items-center justify-center gap-2">
                                             <span>🚪➔</span>
                                             <span>{{ app()->getLocale() === 'bn' ? 'গেট আউট অনুমোদন করুন (GATE OUT)' : 'Approve & Record GATE OUT' }}</span>
                                         </button>
@@ -211,18 +214,18 @@
                         @elseif(in_array($selectedTrip->status, ['GATE_OUT', 'IN_TRIP']))
                             <!-- GATE IN Section -->
                             <div class="space-y-4">
-                                <div class="flex items-center gap-2 text-indigo-900 font-bold text-sm">
-                                    <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span>
+                                <div class="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                                    <span class="w-3 h-3 rounded-full bg-orange-600 inline-block"></span>
                                     <span>{{ app()->getLocale() === 'bn' ? 'গাড়ি প্রত্যাবর্তন রেকর্ড (Record Gate-In)' : 'Record Gate-In (Return & Mileage Audit)' }}</span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
-                                            {{ app()->getLocale() === 'bn' ? 'প্রত্যাবর্তনকালীন ওডোমিটার (KM)' : 'Return Odometer (KM)' }} <span class="text-red-500">*</span>
+                                             {{ app()->getLocale() === 'bn' ? 'প্রত্যাবর্তনকালীন ওডোমিটার (KM)' : 'Return Odometer (KM)' }} <span class="text-red-500">*</span>
                                         </label>
                                         <input type="number" wire:model="end_odometer" 
                                                placeholder="e.g. {{ ($selectedTrip->start_odometer ?? 0) + 70 }}"
-                                               class="w-full text-base font-mono font-bold rounded-xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 p-3 border bg-white" />
+                                               class="w-full text-base font-mono font-bold rounded-xl border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-3 border bg-white" />
                                         <span class="text-[11px] text-slate-500 mt-1 block">
                                             {{ app()->getLocale() === 'bn' ? 'প্রস্থান ওডোমিটার ছিল:' : 'Start Odometer was:' }} {{ $selectedTrip->start_odometer }} KM
                                         </span>
@@ -230,7 +233,7 @@
                                     </div>
                                     <div class="flex items-end">
                                         <button type="button" wire:click="recordGateIn"
-                                                class="w-full py-3.5 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl font-bold text-sm shadow-md shadow-indigo-200 transition flex items-center justify-center gap-2">
+                                                class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-sm shadow-md shadow-slate-300 transition flex items-center justify-center gap-2">
                                             <span>➔🚪</span>
                                             <span>{{ app()->getLocale() === 'bn' ? 'গেট ইন ও দূরত্ব অডিট সম্পন্ন (GATE IN)' : 'Complete GATE IN & Distance Audit' }}</span>
                                         </button>

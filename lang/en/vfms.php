@@ -2,7 +2,7 @@
 
 return [
     // Navigation & Common
-    'app_name' => 'Vehicle & Fleet Management System (VFMS)',
+    'app_name' => 'NZ Group - Vehicle & Fleet Management System (VFMS)',
     'dashboard' => 'Dashboard',
     'vehicles' => 'Vehicles',
     'drivers' => 'Drivers',
