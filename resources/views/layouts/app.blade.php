@@ -42,15 +42,14 @@
                 <div class="flex justify-between h-16">
                     <!-- Brand & Logo -->
                     <div class="flex items-center space-x-3">
-                        <a href="{{ url('/') }}" class="flex items-center space-x-3 group">
-                            <img src="{{ asset('images/nz-group.png') }}" alt="NZ Group" class="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
-                            <div class="border-l border-slate-200 pl-3">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-lg font-black tracking-tight text-slate-900 block leading-tight">VFMS</span>
-                                    <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-orange-100 text-orange-800 uppercase">Internal</span>
-                                </div>
-                                <span class="text-[11px] text-slate-500 font-semibold block leading-tight">
-                                    {{ app()->getLocale() === 'bn' ? 'ফ্লিট ম্যানেজমেন্ট সিস্টেম' : 'Fleet Management System' }}
+                        <a href="{{ url('/') }}" class="flex items-center space-x-2">
+                            <span class="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-orange-200">
+                                🚚
+                            </span>
+                            <div>
+                                <span class="text-lg font-bold text-slate-900 block leading-tight">VFMS</span>
+                                <span class="text-xs text-orange-700 font-semibold block leading-tight">
+                                    {{ app()->getLocale() === 'bn' ? 'ফ্লিট পোর্টাল' : 'Fleet Portal' }}
                                 </span>
                             </div>
                         </a>

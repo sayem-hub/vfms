@@ -3,8 +3,7 @@
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 rounded-2xl p-6 text-white shadow-md border-l-4 border-orange-600">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <div class="flex items-center gap-2 mb-2">
-                    <img src="{{ asset('images/nz-group.png') }}" alt="NZ Group" class="h-6 w-auto bg-white/90 rounded px-1 py-0.5" />
+                <div class="mb-2">
                     <span class="inline-block px-2.5 py-0.5 bg-orange-600/30 rounded-full text-[11px] font-bold text-orange-200 border border-orange-500/40 uppercase tracking-wide">
                         🛞 {{ app()->getLocale() === 'bn' ? 'ড্রাইভার ও ফিল্ড পোর্টাল' : 'Driver Field Operations' }}
                     </span>

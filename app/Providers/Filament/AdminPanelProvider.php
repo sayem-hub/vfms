@@ -31,9 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('NZ Group | VFMS')
-            ->brandLogo(asset('images/nz-group.png'))
-            ->brandLogoHeight('2.5rem')
+            ->brandName('VFMS | ফ্লিট ম্যানেজমেন্ট')
             ->colors([
                 'primary' => Color::Orange,
             ])
