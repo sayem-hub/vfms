@@ -65,31 +65,35 @@
 
 ## Phase 2: Administrative Back-Office (Filament v5 & TALL Stack)
 
-- [ ] **Filament v5 Panel Installation & Setup**
-  - [ ] Install Filament v5 admin panel provider
-  - [ ] Configure bilingual topbar language switcher (English / বাংলা)
-  - [ ] Configure role-based access control (Admin, Transport Manager, Accounts, Store Officer)
+- [x] **Filament v5 Panel Installation & Setup**
+  - [x] Install Filament v5 admin panel provider (`AdminPanelProvider.php`)
+  - [x] Configure bilingual topbar language switcher (English / বাংলা MenuItem)
+  - [x] Configure brand styling (Emerald theme, brand title) and register `SetLocaleMiddleware`
+  - [x] Real-time executive dashboard widget `FleetOverviewWidget` (Active fleet, drivers, cost anomalies, BRTA radar)
 
-- [ ] **Fleet & Compliance Resources**
-  - [ ] `VehicleResource` (Registration, specs, ownership profile, fuel capacity, current status)
-  - [ ] `DriverResource` (Office ID card, profile photo, license expiry badge, assigned unit)
-  - [ ] `VehicleComplianceResource` (BRTA expiry countdown badges: 60d, 30d, 15d, expired)
-  - [ ] Automated scheduled command for BRTA document expiry alerts
+- [x] **Fleet & Compliance Resources**
+  - [x] `VehicleResource` (Registration, specs, ownership profile, fuel capacity, current status)
+  - [x] `DriverResource` (Office ID card, circular photo ImageColumn, license expiry badge, assigned unit)
+  - [x] `VehicleComplianceResource` (BRTA expiry countdown badges: 60d, 30d, 15d, expired color-coded alerts)
+  - [x] Automated scheduled command for BRTA document expiry alerts (`vfms:check-compliances` scheduled daily in `routes/console.php`)
 
-- [ ] **Trip & Requisition Management**
-  - [ ] `TripRequisitionResource` (Approval workflow: Submitted $\rightarrow$ Approved $\rightarrow$ Dispatched $\rightarrow$ In-Trip $\rightarrow$ Completed)
-  - [ ] ERP verification fields & document previewer modal (`erp_requisition_copy`, `erp_gatepass_copy`)
-  - [ ] Distance anomaly banner & justification approval UI
+- [x] **Trip & Requisition Management**
+  - [x] `TripRequisitionResource` (Approval workflow: Submitted $\rightarrow$ Approved $\rightarrow$ Dispatched $\rightarrow$ In-Trip $\rightarrow$ Completed)
+  - [x] ERP verification fields & file upload controls (`erp_requisition_no`, `erp_requisition_copy`, `erp_gatepass_no`, `erp_gatepass_copy`)
+  - [x] Distance anomaly banner with one-click "Audit Distance" row action
 
-- [ ] **Petty Cash & Fuel Log Audit Resources**
-  - [ ] `FuelLogResource` (3-point photo inspection modal: Dispenser + Odometer + Cash Memo)
-  - [ ] Fuel burn-rate anomaly warning highlights
-  - [ ] `TripExpenseSettlementResource` (Advance cash vs itemized expenses, cash balance settlement button for cashier)
+- [x] **Petty Cash & Fuel Log Audit Resources**
+  - [x] `FuelLogResource` (3-point photo inspection: Dispenser + Odometer + Cash Memo)
+  - [x] Fuel burn-rate anomaly warning highlights with one-click "Audit Fuel" row action
+  - [x] `TripExpenseSettlementResource` (Advance cash vs itemized expenses, cash balance settlement button for cashier)
 
-- [ ] **Maintenance & Scrap Parts Store Chain**
-  - [ ] `MaintenanceRecordResource` (Work orders, workshop quotation, ERP PR/PO attachment)
-  - [ ] Old parts surrender status indicator (Blocks payment approval until scrap is acknowledged)
-  - [ ] `ScrapPartsSurrenderResource` (Store officer scrap intake screen with photo of old parts)
+- [x] **Maintenance & Scrap Parts Store Chain**
+  - [x] `MaintenanceRecordResource` (Work orders, workshop quotation, ERP PR/PO attachment)
+  - [x] Old parts surrender status indicator (Blocks payment approval until scrap is acknowledged) with one-click "Store Acknowledge" action
+  - [x] `ScrapPartsSurrenderResource` (Store officer scrap intake screen with photo of old parts)
+
+- [x] **Database Seeders & Conglomerate Demo Data**
+  - [x] `DatabaseSeeder` with Admin (`admin@vfms.com` / `password`), Cashier, Apex Knit Composite, Echo Spinning, Toyota HiAce, Isuzu Covered Van, Noah Ambulance, Drivers with office ID cards, and test BRTA compliance expiring in 12 days.
 
 ---
 

@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Filament\Resources\ScrapPartsSurrenders\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class ScrapPartsSurrendersTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('maintenanceRecord.id')
+                    ->searchable(),
+                TextColumn::make('factoryUnit.name')
+                    ->searchable(),
+                TextColumn::make('item_name')
+                    ->searchable(),
+                TextColumn::make('quantity')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('item_serial_or_code')
+                    ->searchable(),
+                TextColumn::make('photo_of_scrap_part')
+                    ->searchable(),
+                TextColumn::make('receivedByStoreOfficer.name')
+                    ->searchable(),
+                TextColumn::make('scrap_bin_location')
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}
