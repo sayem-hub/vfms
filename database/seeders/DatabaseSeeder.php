@@ -42,44 +42,44 @@ class DatabaseSeeder extends Seeder
 
         // 2. Create Companies & Units
         $apex = Company::firstOrCreate(
-            ['code' => 'AKCL'],
+            ['code' => 'NAZ'],
             [
-                'name' => 'Apex Knit Composite Ltd',
-                'address' => 'Mawna, Gazipur',
+                'name' => 'NAZ Bangladesh Ltd',
+                'address' => 'BK Bari, Gazipur',
                 'phone' => '+8801711001122',
-                'email' => 'info@apexknit.com',
+                'email' => 'info@nz-bd.com',
             ]
         );
 
         $echo = Company::firstOrCreate(
-            ['code' => 'ESML'],
+            ['code' => 'CAKL'],
             [
-                'name' => 'Echo Spinning Mills Ltd',
-                'address' => 'Kachpur, Narayanganj',
+                'name' => 'CA Knitwear Ltd',
+                'address' => 'Bhobanipur, Gazipur',
                 'phone' => '+8801711334455',
-                'email' => 'info@echospinning.com',
+                'email' => 'info@nz-bd.com',
             ]
         );
 
         $unitGazipur = FactoryUnit::firstOrCreate(
-            ['location_code' => 'GZP-01'],
+            ['location_code' => 'BKBARI'],
             [
                 'company_id' => $apex->id,
-                'name' => 'Unit 1 - Dyeing & Knitting Plant',
+                'name' => 'Garments and Textile',
                 'latitude' => 24.1850,
                 'longitude' => 90.4320,
-                'address' => 'Mawna Chowrasta, Gazipur',
+                'address' => 'BK Bari, Gazipur',
             ]
         );
 
         $unitNarayanganj = FactoryUnit::firstOrCreate(
-            ['location_code' => 'NKG-02'],
+            ['location_code' => 'BHBNPR'],
             [
                 'company_id' => $echo->id,
-                'name' => 'Unit 2 - Spinning & Yarn Warehouse',
+                'name' => 'Garments Unit 2',
                 'latitude' => 23.6850,
                 'longitude' => 90.5120,
-                'address' => 'Kachpur Bridge Approach, Narayanganj',
+                'address' => 'Bhobanipur, Gazipur',
             ]
         );
 

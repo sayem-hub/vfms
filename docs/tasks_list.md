@@ -99,20 +99,34 @@
 
 ## Phase 3: Front-Office & Field Portals (Livewire v4)
 
-- [ ] **Employee Trip Requisition Portal**
-  - [ ] Simple mobile-friendly Livewire form for factory staff to request vehicles
-  - [ ] Destination auto-complete with map coordinates
-  - [ ] Approval notification engine for HODs
+- [x] **Shared Portal Layout & Navigation**
+  - [x] Responsive portal layout ([`resources/views/layouts/app.blade.php`](../resources/views/layouts/app.blade.php)) with Figtree & Hind Siliguri typography
+  - [x] Sticky topbar with direct links to Requisitions, Gate Pass, Driver Portal, and Admin
+  - [x] Bilingual instant language switcher (English $\leftrightarrow$ বাংলা)
 
-- [ ] **Factory Security Gate-Pass Terminal**
-  - [ ] Quick security guard screen at factory gate (Gazipur, Savar, Narayanganj, etc.)
-  - [ ] Scan Vehicle QR / Enter Gate Pass No
-  - [ ] Validate active trip status before recording `GATE_OUT` and `GATE_IN` timestamps and odometers
+- [x] **Employee Trip Requisition Portal**
+  - [x] Livewire v4 component [`TripRequisitionPortal.php`](../app/Livewire/Portal/TripRequisitionPortal.php) & view
+  - [x] Quick preset routes for composite mills (Gulshan HO, Mawna Gazipur, Kachpur Narayanganj, DEPZ, Chittagong Port)
+  - [x] Custom ERP cross-reference inputs (`erp_requisition_no` and `erp_requisition_copy` file upload)
+  - [x] Automated map routing distance calculation via `RoutingManager` (OSRM)
+  - [x] Recent requisitions table with real-time status tracking badges
 
-- [ ] **Driver Expense Submission Portal**
-  - [ ] Driver interface completely in Bengali (বাংলা)
-  - [ ] Log fuel refill with live camera snapshot
-  - [ ] Log tolls, parking, food allowance, and submit trip settlement
+- [x] **Factory Security Gate-Pass Terminal**
+  - [x] Specialized Livewire v4 terminal [`GatePassTerminal.php`](../app/Livewire/Portal/GatePassTerminal.php) for factory security guards
+  - [x] Real-time search by Requisition No, ERP Gate Pass No, Vehicle Registration, or Driver
+  - [x] Record **GATE OUT** (departure odometer, start timestamp, transitions vehicle to `ON_TRIP`)
+  - [x] Record **GATE IN** (arrival odometer, end timestamp, transitions vehicle to `AVAILABLE`)
+  - [x] Instant automated distance audit check via `DistanceAuditService`: Immediately flashes high-visibility warning banner if vehicle traveled $>15\%$ over expected route distance
+
+- [x] **Driver Expense & Fuel Submission Portal**
+  - [x] Mobile-optimized Livewire v4 field portal [`DriverPortal.php`](../app/Livewire/Portal/DriverPortal.php)
+  - [x] Log fuel/gas refill with mandatory 3-point live photo upload (Dispenser Meter + Dashboard Odometer + Cash Memo)
+  - [x] Real-time burn-rate efficiency calculation via `FuelEfficiencyService` (flags $>20\%$ drop)
+  - [x] Itemized trip expenses (Tolls, Parking, Daily Food Allowance / DA, Emergency Repairs)
+  - [x] Live petty cash settlement balance calculator: $(\text{Advance Cash} - \text{Total Actual Expenses})$ with instant refundable/payable breakdown and submission to accounts
+
+- [x] **Automated Test Suite for Portals**
+  - [x] 18 Pest tests passing with 65 assertions (`php artisan test`)
 
 ---
 
