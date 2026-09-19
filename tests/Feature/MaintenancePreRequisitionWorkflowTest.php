@@ -103,3 +103,16 @@ test('digital pre-requisition eliminates manual paper memo and transitions throu
         ->and($record->fresh()->payment_status)->toBe('READY_FOR_PAYMENT')
         ->and($record->fresh()->storeAcknowledgedBy->id)->toBe($storeOfficer->id);
 });
+
+test('admin maintenance records filament page renders successfully without error', function () {
+    $admin = User::create([
+        'name' => 'Super Admin',
+        'email' => 'admin@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $this->actingAs($admin);
+
+    $response = $this->get('/admin/maintenance-records');
+    $response->assertOk();
+});

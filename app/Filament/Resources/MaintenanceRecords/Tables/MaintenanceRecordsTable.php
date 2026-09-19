@@ -143,6 +143,12 @@ class MaintenanceRecordsTable
                     ->icon(Heroicon::OutlinedTag)
                     ->color('info')
                     ->visible(fn ($record) => $record->admin_approval_status === 'APPROVED_BY_ADMIN')
+                    ->fillForm(fn ($record): array => [
+                        'erp_requisition_type' => $record->erp_requisition_type ?? 'SERVICE_REQUISITION',
+                        'erp_requisition_no' => $record->erp_requisition_no,
+                        'erp_requisition_date' => $record->erp_requisition_date ?? now(),
+                        'erp_requisition_copy' => $record->erp_requisition_copy,
+                    ])
                     ->form([
                         Select::make('erp_requisition_type')
                             ->label('ইআরপি রিকুইজিশনের ধরন')
@@ -150,16 +156,13 @@ class MaintenanceRecordsTable
                                 'SERVICE_REQUISITION' => 'Service Requisition (SRQ - যেমন: NAZBL-SRQ-26-00389)',
                                 'PARTS_REQUISITION' => 'Parts / Purchase Requisition (RQSN - যেমন: NAZBL-RQSN-26-02116)',
                             ])
-                            ->default($record->erp_requisition_type ?? 'SERVICE_REQUISITION')
                             ->required(),
                         TextInput::make('erp_requisition_no')
                             ->label('ইআরপি রিকুইজিশন নম্বর')
                             ->placeholder('e.g. NAZBL-SRQ-26-00389 or NAZBL-RQSN-26-02116')
-                            ->default($record->erp_requisition_no)
                             ->required(),
                         DatePicker::make('erp_requisition_date')
                             ->label('ইআরপি রিকুইজিশনের তারিখ')
-                            ->default($record->erp_requisition_date ?? now())
                             ->required(),
                         FileUpload::make('erp_requisition_copy')
                             ->label('ইআরপি রিকুইজিশনের স্ক্যান কপি / ছবি')
