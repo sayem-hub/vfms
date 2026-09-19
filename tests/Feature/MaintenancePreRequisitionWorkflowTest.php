@@ -116,3 +116,39 @@ test('admin maintenance records filament page renders successfully without error
     $response = $this->get('/admin/maintenance-records');
     $response->assertOk();
 });
+
+test('admin maintenance records create and edit pages render successfully without error', function () {
+    $admin = User::create([
+        'name' => 'Super Admin',
+        'email' => 'admin@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $company = Company::create(['name' => 'N.A.Z. Bangladesh Ltd', 'code' => 'NAZ']);
+    $vehicle = Vehicle::create([
+        'company_id' => $company->id,
+        'registration_no' => 'DHAKA-METRO-CHA-11-9999',
+        'current_odometer' => 30000,
+    ]);
+
+    $record = MaintenanceRecord::create([
+        'work_order_no' => 'WO-TEST-EDIT',
+        'pre_requisition_no' => 'MPR-TEST-EDIT',
+        'vehicle_id' => $vehicle->id,
+        'maintenance_type' => 'SCHEDULED_PREVENTIVE',
+        'workshop_type' => 'FACTORY_IN_HOUSE_WORKSHOP',
+        'odometer_at_service' => 30000,
+        'service_date' => now(),
+        'service_description' => 'Oil and filter check',
+    ]);
+
+    $this->actingAs($admin);
+
+    // Test Create Page
+    $responseCreate = $this->get('/admin/maintenance-records/create');
+    $responseCreate->assertOk();
+
+    // Test Edit Page
+    $responseEdit = $this->get("/admin/maintenance-records/{$record->id}/edit");
+    $responseEdit->assertOk();
+});
