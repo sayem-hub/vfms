@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\Driver;
 use App\Models\FactoryUnit;
+use App\Models\FixedRoute;
 use App\Models\FuelLog;
 use App\Models\MaintenanceRecord;
 use App\Models\TripExpenseSettlement;
@@ -12,6 +13,7 @@ use App\Models\TripRequest;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehicleCompliance;
+use App\Models\VehicleGateLog;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -398,6 +400,228 @@ class DatabaseSeeder extends Seeder
                 'is_old_parts_surrendered' => false,
                 'payment_status' => 'PENDING_PARTS_SURRENDER',
                 'status' => 'PARTS_SENT_TO_VENDOR',
+            ]
+        );
+
+        // 8. Fixed & Dedicated Movement Vehicles (Management Cars & Commute Buses)
+        // MD Dedicated Car
+        $mdCar = Vehicle::firstOrCreate(
+            ['registration_no' => 'DHAKA METRO-GA-21-9988'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'vehicle_type' => 'SEDAN_CAR',
+                'usage_category' => 'DEDICATED_MANAGEMENT',
+                'dedicated_to_official' => 'Managing Director (Engr. Zahirul Islam)',
+                'ownership_type' => 'COMPANY_OWNED',
+                'fuel_type' => 'OCTANE',
+                'fuel_payer' => 'MONTHLY_QUOTA',
+                'monthly_fuel_quota_liters' => 250.0,
+                'fuel_capacity_liters' => 60.0,
+                'expected_km_per_liter' => 10.5,
+                'current_odometer' => 32100,
+                'brand' => 'Toyota',
+                'model_name' => 'Camry Hybrid',
+                'model_year' => '2023',
+                'status' => 'AVAILABLE',
+            ]
+        );
+
+        $driverKabir = Driver::firstOrCreate(
+            ['license_number' => 'DL-554433221'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'name' => 'Kabir Hossain',
+                'office_id_card' => 'EMP-DRV-1011',
+                'phone' => '01711223344',
+                'license_type' => 'LIGHT',
+                'license_expiry_date' => now()->addMonths(18),
+                'employment_type' => 'COMPANY_PAYROLL',
+                'salary' => 25000.0,
+                'current_vehicle_id' => $mdCar->id,
+                'preferred_locale' => 'bn',
+            ]
+        );
+
+        // Director SCM Dedicated Microbus/Car
+        $directorCar = Vehicle::firstOrCreate(
+            ['registration_no' => 'DHAKA METRO-CHA-53-4412'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'vehicle_type' => 'MICROBUS',
+                'usage_category' => 'DEDICATED_MANAGEMENT',
+                'dedicated_to_official' => 'Director SCM (Mr. Ashraful Alam)',
+                'ownership_type' => 'COMPANY_OWNED',
+                'fuel_type' => 'OCTANE',
+                'fuel_payer' => 'MONTHLY_QUOTA',
+                'monthly_fuel_quota_liters' => 200.0,
+                'fuel_capacity_liters' => 65.0,
+                'expected_km_per_liter' => 8.5,
+                'current_odometer' => 64800,
+                'brand' => 'Toyota',
+                'model_name' => 'Noah Super GL',
+                'model_year' => '2022',
+                'status' => 'AVAILABLE',
+            ]
+        );
+
+        $driverShamim = Driver::firstOrCreate(
+            ['license_number' => 'DL-998877665'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'name' => 'Shamim Reza',
+                'office_id_card' => 'EMP-DRV-1025',
+                'phone' => '01811556677',
+                'license_type' => 'MEDIUM',
+                'license_expiry_date' => now()->addMonths(12),
+                'employment_type' => 'COMPANY_PAYROLL',
+                'salary' => 23000.0,
+                'current_vehicle_id' => $directorCar->id,
+                'preferred_locale' => 'bn',
+            ]
+        );
+
+        // Staff Commute Bus
+        $staffBus = Vehicle::firstOrCreate(
+            ['registration_no' => 'DHAKA METRO-BA-11-2345'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'vehicle_type' => 'STAFF_BUS',
+                'usage_category' => 'STAFF_COMMUTE_BUS',
+                'ownership_type' => 'COMPANY_OWNED',
+                'fuel_type' => 'DIESEL',
+                'fuel_payer' => 'COMPANY',
+                'fuel_capacity_liters' => 150.0,
+                'expected_km_per_liter' => 3.8,
+                'current_odometer' => 142300,
+                'brand' => 'Hino',
+                'model_name' => 'AK1J Staff Bus (52 Seater)',
+                'model_year' => '2021',
+                'status' => 'AVAILABLE',
+            ]
+        );
+
+        $driverZahid = Driver::firstOrCreate(
+            ['license_number' => 'DL-332211445'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'name' => 'Md. Zahid Hasan',
+                'office_id_card' => 'EMP-DRV-1055',
+                'phone' => '01911889900',
+                'license_type' => 'HEAVY',
+                'license_expiry_date' => now()->addMonths(24),
+                'employment_type' => 'COMPANY_PAYROLL',
+                'salary' => 26000.0,
+                'current_vehicle_id' => $staffBus->id,
+                'preferred_locale' => 'bn',
+            ]
+        );
+
+        // 9. Create Fixed Routes
+        $routeJoydebpur = FixedRoute::firstOrCreate(
+            ['route_code' => 'R-01'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'route_name' => 'Joydebpur Chowrasta ➔ BK Bari Plant Staff Commute',
+                'origin_name' => 'Joydebpur Chowrasta, Gazipur',
+                'destination_name' => 'NZ Group BK Bari Industrial Park',
+                'standard_distance_km' => 38.5,
+                'scheduled_departure_time' => '06:30 AM',
+                'scheduled_return_time' => '06:30 PM',
+                'shift_name' => 'General Shift',
+                'assigned_vehicle_id' => $staffBus->id,
+                'assigned_driver_id' => $driverZahid->id,
+                'stoppages' => 'Joydebpur Chowrasta -> Shibbari -> Salna -> Rajendrapur -> Hotapara -> BK Bari Plant',
+                'is_active' => true,
+            ]
+        );
+
+        $routeUttara = FixedRoute::firstOrCreate(
+            ['route_code' => 'R-02'],
+            [
+                'company_id' => $apex->id,
+                'factory_unit_id' => $unitGazipur->id,
+                'route_name' => 'Uttara Sector 7 ➔ BK Bari Plant Management Shuttle',
+                'origin_name' => 'Uttara Sector 7 (Rabindra Sarani)',
+                'destination_name' => 'NZ Group BK Bari Industrial Park',
+                'standard_distance_km' => 46.0,
+                'scheduled_departure_time' => '06:45 AM',
+                'scheduled_return_time' => '06:45 PM',
+                'shift_name' => 'Executive Shift',
+                'assigned_vehicle_id' => $directorCar->id,
+                'assigned_driver_id' => $driverShamim->id,
+                'stoppages' => 'Uttara Sec 7 -> House Building -> Tongi Station Road -> Board Bazar -> Gazipur Bypass -> BK Bari',
+                'is_active' => true,
+            ]
+        );
+
+        // 10. Sample Today's Vehicle Gate Logs
+        // Staff bus completed morning pickup run
+        VehicleGateLog::firstOrCreate(
+            [
+                'vehicle_id' => $staffBus->id,
+                'log_date' => now()->toDateString(),
+                'log_type' => 'STAFF_COMMUTE_BUS',
+            ],
+            [
+                'driver_id' => $driverZahid->id,
+                'fixed_route_id' => $routeJoydebpur->id,
+                'gate_out_time' => now()->setTime(6, 30),
+                'gate_in_time' => now()->setTime(7, 45),
+                'out_odometer' => 142260,
+                'in_odometer' => 142300,
+                'total_km' => 40.0,
+                'official_name' => 'Morning General Shift Staff (50 Persons)',
+                'destination' => 'BK Bari Plant',
+                'purpose' => 'Morning Staff Pickup',
+                'status' => 'COMPLETED',
+                'security_guard_id' => $admin->id,
+            ]
+        );
+
+        // MD car out for Head Office visit
+        VehicleGateLog::firstOrCreate(
+            [
+                'vehicle_id' => $mdCar->id,
+                'log_date' => now()->toDateString(),
+                'gate_out_time' => now()->setTime(8, 30),
+            ],
+            [
+                'driver_id' => $driverKabir->id,
+                'log_type' => 'DEDICATED_MANAGEMENT_CAR',
+                'out_odometer' => 32050,
+                'official_name' => 'Managing Director (Engr. Zahirul Islam)',
+                'destination' => 'Baridhara DOHS Head Office',
+                'purpose' => 'Management Board Meeting & HO Visit',
+                'status' => 'OUT',
+                'security_guard_id' => $admin->id,
+            ]
+        );
+
+        // 11. Sample Monthly Quota Fuel Refill for MD Car
+        FuelLog::firstOrCreate(
+            [
+                'vehicle_id' => $mdCar->id,
+                'odometer_reading' => 32050,
+            ],
+            [
+                'driver_id' => $driverKabir->id,
+                'trip_request_id' => null, // No trip request needed for quota car
+                'fuel_type' => 'OCTANE',
+                'refill_date' => now()->subDay(),
+                'station_name' => 'Trust Filling Station (Gulshan-2)',
+                'fuel_quantity' => 60.00,
+                'unit_price' => 125.00,
+                'total_cost' => 7500.00,
+                'calculated_km_per_liter' => 11.2,
+                'is_efficiency_anomaly' => false,
+                'payment_method' => 'COMPANY_CREDIT_VOUCHER',
             ]
         );
     }

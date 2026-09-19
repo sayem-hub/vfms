@@ -212,10 +212,26 @@ class DriverPortal extends Component
             $trip = TripRequest::with(['vehicle', 'driver'])->find($this->activeTripId);
             $fuelLogs = FuelLog::where('trip_request_id', $this->activeTripId)->latest()->get();
             $totalFuelCost = (float) $fuelLogs->sum('total_cost');
+        } elseif ($driver?->currentVehicle) {
+            $fuelLogs = FuelLog::where('vehicle_id', $driver->currentVehicle->id)->latest('id')->take(5)->get();
+            $totalFuelCost = (float) $fuelLogs->sum('total_cost');
         }
 
         $totalExpenses = $totalFuelCost + $this->toll_expense + $this->parking_expense + $this->food_allowance + $this->emergency_repair + $this->other_expense;
         $netBalance = $this->advance_cash - $totalExpenses;
+
+        $monthlyFuelQuota = null;
+        $monthlyFuelConsumed = 0.0;
+        $monthlyFuelRemaining = null;
+        $monthlyFuelPercent = null;
+
+        if ($driver?->currentVehicle && $driver->currentVehicle->monthly_fuel_quota_liters) {
+            $v = $driver->currentVehicle;
+            $monthlyFuelQuota = (float) $v->monthly_fuel_quota_liters;
+            $monthlyFuelConsumed = $v->monthlyFuelConsumedLiters();
+            $monthlyFuelRemaining = $v->monthlyFuelQuotaRemaining();
+            $monthlyFuelPercent = $v->monthlyFuelQuotaUsagePercent();
+        }
 
         return view('livewire.portal.driver-portal', [
             'drivers' => $drivers,
@@ -225,6 +241,10 @@ class DriverPortal extends Component
             'totalFuelCost' => $totalFuelCost,
             'totalExpenses' => $totalExpenses,
             'netBalance' => $netBalance,
+            'monthlyFuelQuota' => $monthlyFuelQuota,
+            'monthlyFuelConsumed' => $monthlyFuelConsumed,
+            'monthlyFuelRemaining' => $monthlyFuelRemaining,
+            'monthlyFuelPercent' => $monthlyFuelPercent,
         ]);
     }
 }

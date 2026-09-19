@@ -23,6 +23,21 @@ class VehicleForm
                 TextInput::make('vehicle_type')
                     ->required()
                     ->default('SEDAN_CAR'),
+                Select::make('usage_category')
+                    ->label(fn () => __('vfms.usage_category'))
+                    ->options([
+                        'GENERAL_POOL' => 'General Pool (সাধারণ পুল)',
+                        'DEDICATED_MANAGEMENT' => 'Dedicated Management (ম্যানেজমেন্টের নির্ধারিত)',
+                        'STAFF_COMMUTE_BUS' => 'Staff Commute Bus (স্টাফ বাস)',
+                        'FACTORY_LOGISTICS' => 'Factory Logistics (কারখানা পণ্য পরিবহন)',
+                        'EMERGENCY_AMBULANCE' => 'Emergency Ambulance (এ্যাম্বুলেন্স)',
+                    ])
+                    ->default('GENERAL_POOL')
+                    ->required(),
+                TextInput::make('dedicated_to_official')
+                    ->label(fn () => __('vfms.dedicated_official'))
+                    ->placeholder('e.g. Managing Director / Director SCM'),
+
                 TextInput::make('ownership_type')
                     ->required()
                     ->default('COMPANY_OWNED'),

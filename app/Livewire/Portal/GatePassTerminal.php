@@ -2,7 +2,11 @@
 
 namespace App\Livewire\Portal;
 
+use App\Models\Driver;
+use App\Models\FixedRoute;
 use App\Models\TripRequest;
+use App\Models\Vehicle;
+use App\Models\VehicleGateLog;
 use App\Services\Audit\DistanceAuditService;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -11,16 +15,37 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class GatePassTerminal extends Component
 {
+    public string $activeTab = 'trips'; // 'trips' or 'fixed'
+
     public string $searchQuery = '';
 
+    // Request-based trip fields
     public ?int $selectedTripId = null;
 
-    // Gate Out fields
     public ?int $start_odometer = null;
 
-    // Gate In fields
     public ?int $end_odometer = null;
 
+    // Fixed & dedicated vehicles fields
+    public ?int $selectedFixedVehicleId = null;
+
+    public ?int $activeGateLogId = null;
+
+    public ?int $fixedDriverId = null;
+
+    public ?int $fixedRouteId = null;
+
+    public string $fixedOfficialName = '';
+
+    public string $fixedDestination = '';
+
+    public string $fixedPurpose = '';
+
+    public ?int $fixedOutOdometer = null;
+
+    public ?int $fixedInOdometer = null;
+
+    // Common feedback
     public ?string $feedbackMessage = null;
 
     public ?string $feedbackType = 'success'; // 'success' or 'warning'
@@ -29,7 +54,7 @@ class GatePassTerminal extends Component
 
     public function mount(): void
     {
-        // Default select latest trip that is dispatched or in trip
+        // Default select latest trip for trips tab
         $activeTrip = TripRequest::whereIn('status', ['HOD_APPROVED', 'DISPATCHED', 'GATE_OUT', 'IN_TRIP'])
             ->latest()
             ->first();
@@ -37,8 +62,29 @@ class GatePassTerminal extends Component
         if ($activeTrip) {
             $this->selectTrip($activeTrip->id);
         }
+
+        // Default select first fixed/dedicated vehicle
+        $firstFixed = Vehicle::where(function ($q) {
+            $q->where('usage_category', '!=', 'GENERAL_POOL')
+                ->orWhereNotNull('dedicated_to_official')
+                ->orWhere('vehicle_type', 'STAFF_BUS');
+        })->first();
+
+        if ($firstFixed) {
+            $this->selectFixedVehicle($firstFixed->id);
+        }
     }
 
+    public function switchTab(string $tab): void
+    {
+        $this->activeTab = $tab;
+        $this->feedbackMessage = null;
+        $this->searchQuery = '';
+    }
+
+    /* ----------------------------------------------------
+     | Tab 1: Request-Based Trips
+     * ---------------------------------------------------- */
     public function selectTrip(int $id): void
     {
         $this->selectedTripId = $id;
@@ -122,8 +168,148 @@ class GatePassTerminal extends Component
         }
     }
 
+    /* ----------------------------------------------------
+     | Tab 2: Fixed Commute & Management Vehicles
+     * ---------------------------------------------------- */
+    public function selectFixedVehicle(int $vehicleId): void
+    {
+        $this->selectedFixedVehicleId = $vehicleId;
+        $vehicle = Vehicle::with(['drivers', 'fixedRoutes'])->find($vehicleId);
+
+        if (! $vehicle) {
+            return;
+        }
+
+        $this->feedbackMessage = null;
+
+        // Check if there is an active OUT log for this vehicle
+        $activeLog = VehicleGateLog::where('vehicle_id', $vehicleId)
+            ->where('status', 'OUT')
+            ->latest('id')
+            ->first();
+
+        if ($activeLog) {
+            $this->activeGateLogId = $activeLog->id;
+            $this->fixedOutOdometer = $activeLog->out_odometer;
+            $this->fixedDriverId = $activeLog->driver_id;
+            $this->fixedRouteId = $activeLog->fixed_route_id;
+            $this->fixedOfficialName = $activeLog->official_name ?? '';
+            $this->fixedDestination = $activeLog->destination ?? '';
+            $this->fixedPurpose = $activeLog->purpose ?? '';
+            $this->fixedInOdometer = null;
+        } else {
+            $this->activeGateLogId = null;
+            $this->fixedOutOdometer = $vehicle->current_odometer;
+            $this->fixedDriverId = $vehicle->drivers()->first()?->id;
+            $this->fixedOfficialName = $vehicle->dedicated_to_official ?? '';
+
+            $firstRoute = $vehicle->fixedRoutes()->first();
+            $this->fixedRouteId = $firstRoute?->id;
+            $this->fixedDestination = $firstRoute ? $firstRoute->destination_name : '';
+
+            if ($vehicle->isStaffBus()) {
+                $this->fixedPurpose = 'স্টাফ আনা-নেওয়া / Regular Staff Commute';
+            } elseif ($vehicle->isDedicated()) {
+                $this->fixedPurpose = 'অফিসিয়াল যাতায়াত / Executive Management Commute';
+            } else {
+                $this->fixedPurpose = 'নিয়মিত ফ্যাক্টরি ডিউটি';
+            }
+
+            $this->fixedInOdometer = null;
+        }
+    }
+
+    public function recordFixedGateOut(): void
+    {
+        $this->validate([
+            'selectedFixedVehicleId' => 'required|exists:vehicles,id',
+            'fixedOutOdometer' => 'required|numeric|min:0',
+        ]);
+
+        $vehicle = Vehicle::with('fixedRoutes')->findOrFail($this->selectedFixedVehicleId);
+
+        $logType = 'DEDICATED_MANAGEMENT_CAR';
+        if ($vehicle->isStaffBus() || $this->fixedRouteId) {
+            $logType = 'STAFF_COMMUTE_BUS';
+        } elseif ($vehicle->usage_category === 'FACTORY_LOGISTICS') {
+            $logType = 'OFFICIAL_DUTY';
+        }
+
+        $log = VehicleGateLog::create([
+            'vehicle_id' => $vehicle->id,
+            'driver_id' => $this->fixedDriverId,
+            'fixed_route_id' => $this->fixedRouteId,
+            'log_type' => $logType,
+            'log_date' => now()->toDateString(),
+            'gate_out_time' => now(),
+            'out_odometer' => $this->fixedOutOdometer,
+            'official_name' => $this->fixedOfficialName ?: $vehicle->dedicated_to_official,
+            'destination' => $this->fixedDestination,
+            'purpose' => $this->fixedPurpose,
+            'status' => 'OUT',
+            'security_guard_id' => auth()->id(),
+        ]);
+
+        // Update vehicle status & current odometer
+        $vehicle->update([
+            'current_odometer' => $this->fixedOutOdometer,
+            'status' => 'ON_TRIP',
+        ]);
+
+        $this->feedbackType = 'success';
+        $this->feedbackMessage = app()->getLocale() === 'bn'
+            ? "গাড়ি ({$vehicle->registration_no}) সফলভাবে প্রস্থান করেছে (GATE OUT সম্পন্ন)। সময়: ".now()->format('h:i A')
+            : "Vehicle ({$vehicle->registration_no}) GATE OUT recorded successfully at ".now()->format('h:i A');
+
+        $this->selectFixedVehicle($vehicle->id);
+    }
+
+    public function recordFixedGateIn(): void
+    {
+        if (! $this->activeGateLogId) {
+            return;
+        }
+
+        $log = VehicleGateLog::with('vehicle')->findOrFail($this->activeGateLogId);
+
+        $this->validate([
+            'fixedInOdometer' => [
+                'required',
+                'numeric',
+                'gte:'.($log->out_odometer ?? 0),
+            ],
+        ], [
+            'fixedInOdometer.gte' => app()->getLocale() === 'bn'
+                ? 'প্রবেশ ওডোমিটার অবশ্যই প্রস্থান ওডোমিটার থেকে বেশি বা সমান হতে হবে।'
+                : 'Arrival odometer must be greater than or equal to departure odometer.',
+        ]);
+
+        $totalKm = max(0, $this->fixedInOdometer - ($log->out_odometer ?? 0));
+
+        $log->update([
+            'gate_in_time' => now(),
+            'in_odometer' => $this->fixedInOdometer,
+            'total_km' => $totalKm,
+            'status' => 'COMPLETED',
+        ]);
+
+        // Update vehicle
+        $log->vehicle?->update([
+            'current_odometer' => $this->fixedInOdometer,
+            'status' => 'AVAILABLE',
+        ]);
+
+        $this->feedbackType = 'success';
+        $this->feedbackMessage = app()->getLocale() === 'bn'
+            ? "গাড়ি ({$log->vehicle?->registration_no}) সফলভাবে ফ্যাক্টরিতে প্রবেশ করেছে (GATE IN সম্পন্ন)। মোট ভ্রমণ: {$totalKm} কিমি।"
+            : "Vehicle ({$log->vehicle?->registration_no}) GATE IN recorded successfully. Total run: {$totalKm} KM.";
+
+        $this->selectFixedVehicle($log->vehicle_id);
+    }
+
     public function render(): View
     {
+        // 1. Trips Query
         $selectedTrip = null;
         if ($this->selectedTripId) {
             $selectedTrip = TripRequest::with(['vehicle', 'driver', 'requester', 'factoryUnit'])->find($this->selectedTripId);
@@ -133,7 +319,7 @@ class GatePassTerminal extends Component
             ->whereIn('status', ['HOD_APPROVED', 'DISPATCHED', 'GATE_OUT', 'IN_TRIP', 'COMPLETED'])
             ->latest();
 
-        if (! empty($this->searchQuery)) {
+        if ($this->activeTab === 'trips' && ! empty($this->searchQuery)) {
             $query = '%'.trim($this->searchQuery).'%';
             $tripsQuery->where(function ($q) use ($query) {
                 $q->where('request_no', 'like', $query)
@@ -141,12 +327,50 @@ class GatePassTerminal extends Component
                     ->orWhereHas('driver', fn ($d) => $d->where('name', 'like', $query)->orWhere('office_id_card', 'like', $query));
             });
         }
-
         $activeGateTrips = $tripsQuery->take(10)->get();
+
+        // 2. Fixed & Dedicated Vehicles Query
+        $fixedVehiclesQuery = Vehicle::with(['drivers', 'fixedRoutes'])
+            ->where(function ($q) {
+                $q->where('usage_category', '!=', 'GENERAL_POOL')
+                    ->orWhereNotNull('dedicated_to_official')
+                    ->orWhere('vehicle_type', 'STAFF_BUS');
+            });
+
+        if ($this->activeTab === 'fixed' && ! empty($this->searchQuery)) {
+            $query = '%'.trim($this->searchQuery).'%';
+            $fixedVehiclesQuery->where(function ($q) use ($query) {
+                $q->where('registration_no', 'like', $query)
+                    ->orWhere('dedicated_to_official', 'like', $query)
+                    ->orWhereHas('drivers', fn ($d) => $d->where('name', 'like', $query)->orWhere('office_id_card', 'like', $query))
+                    ->orWhereHas('fixedRoutes', fn ($r) => $r->where('route_name', 'like', $query));
+            });
+        }
+        $fixedVehicles = $fixedVehiclesQuery->get();
+
+        $selectedFixedVehicle = null;
+        if ($this->selectedFixedVehicleId) {
+            $selectedFixedVehicle = Vehicle::with(['drivers', 'fixedRoutes', 'factoryUnit'])->find($this->selectedFixedVehicleId);
+        }
+
+        // Today's gate logs for fixed vehicles
+        $todayGateLogs = VehicleGateLog::with(['vehicle', 'driver', 'fixedRoute'])
+            ->whereDate('log_date', now()->toDateString())
+            ->latest()
+            ->take(15)
+            ->get();
+
+        $allDrivers = Driver::where('is_active', true)->orderBy('name')->get();
+        $allFixedRoutes = FixedRoute::where('is_active', true)->orderBy('route_name')->get();
 
         return view('livewire.portal.gate-pass-terminal', [
             'selectedTrip' => $selectedTrip,
             'activeGateTrips' => $activeGateTrips,
+            'fixedVehicles' => $fixedVehicles,
+            'selectedFixedVehicle' => $selectedFixedVehicle,
+            'todayGateLogs' => $todayGateLogs,
+            'allDrivers' => $allDrivers,
+            'allFixedRoutes' => $allFixedRoutes,
         ]);
     }
 }

@@ -56,4 +56,14 @@ class Driver extends Model
     {
         return $this->hasMany(TripExpenseSettlement::class);
     }
+
+    public function fixedRoutes(): HasMany
+    {
+        return $this->hasMany(FixedRoute::class, 'assigned_driver_id');
+    }
+
+    public function gateLogs(): HasMany
+    {
+        return $this->hasMany(VehicleGateLog::class);
+    }
 }

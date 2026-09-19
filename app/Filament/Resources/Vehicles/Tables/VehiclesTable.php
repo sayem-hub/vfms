@@ -23,6 +23,20 @@ class VehiclesTable
                     ->searchable(),
                 TextColumn::make('vehicle_type')
                     ->searchable(),
+                TextColumn::make('usage_category')
+                    ->label(fn () => __('vfms.usage_category'))
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'DEDICATED_MANAGEMENT' => 'purple',
+                        'STAFF_COMMUTE_BUS' => 'warning',
+                        'FACTORY_LOGISTICS' => 'info',
+                        default => 'gray',
+                    }),
+                TextColumn::make('dedicated_to_official')
+                    ->label(fn () => __('vfms.dedicated_official'))
+                    ->placeholder('-')
+                    ->searchable(),
+
                 TextColumn::make('ownership_type')
                     ->searchable(),
                 TextColumn::make('fuel_type')

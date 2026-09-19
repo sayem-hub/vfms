@@ -42,14 +42,14 @@
         </div>
     @endif
 
-    <!-- Active Trip Summary Banner -->
+    <!-- Active Trip or Assigned Vehicle Banner -->
     @if($trip)
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">
                     {{ app()->getLocale() === 'bn' ? 'বর্তমান সক্রিয় ট্রিপ' : 'Current Active Trip' }}
                 </span>
-                <span class="font-mono font-bold text-slate-900 text-sm">{{ $trip->requisition_no }}</span>
+                <span class="font-mono font-bold text-slate-900 text-sm">{{ $trip->request_no }}</span>
                 <span class="text-xs text-slate-500 block mt-0.5">
                     📍 {{ $trip->origin_name }} ➔ {{ $trip->destination_name }}
                 </span>
@@ -64,7 +64,91 @@
                 </span>
             </div>
         </div>
+    @elseif($driver?->currentVehicle)
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">
+                    {{ app()->getLocale() === 'bn' ? 'নির্ধারিত স্থায়ী গাড়ি / ডিউটি' : 'Assigned Vehicle / Duty' }}
+                </span>
+                <div class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <span class="font-mono text-orange-700">{{ $driver->currentVehicle->registration_no }}</span>
+                    <span class="text-xs text-slate-500 font-normal">({{ $driver->currentVehicle->brand }} {{ $driver->currentVehicle->model_name }})</span>
+                </div>
+                <span class="text-xs text-slate-500 block mt-0.5">
+                    {{ $driver->currentVehicle->dedicated_to_official ? '👔 ' . $driver->currentVehicle->dedicated_to_official : ($driver->currentVehicle->isStaffBus() ? '🚌 স্টাফ পরিবহন বাস' : '🏷️ ' . $driver->currentVehicle->vehicle_type) }}
+                </span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <span class="text-[11px] text-slate-400 block">{{ app()->getLocale() === 'bn' ? 'বর্তমান ওডোমিটার' : 'Current Odometer' }}</span>
+                    <span class="text-sm font-bold text-slate-800 font-mono">{{ $driver->currentVehicle->current_odometer }} KM</span>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                    {{ app()->getLocale() === 'bn' ? 'স্থায়ী দায়িত্ব' : 'Dedicated Duty' }}
+                </span>
+            </div>
+        </div>
     @endif
+
+    <!-- Monthly Fuel Quota Tracker Widget -->
+    @if($monthlyFuelQuota)
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-zinc-900 text-white rounded-2xl p-6 shadow-sm space-y-4 border-l-4 border-orange-500">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-orange-400 block">
+                        ⛽ {{ app()->getLocale() === 'bn' ? 'মাসিক ফুয়েল কোটা স্ট্যাটাস' : 'Monthly Fuel Quota Tracker' }}
+                    </span>
+                    <h3 class="text-base font-bold text-white mt-0.5">
+                        {{ now()->format('F Y') }} - {{ $driver->currentVehicle->registration_no }}
+                    </h3>
+                </div>
+                <div>
+                    @if($monthlyFuelPercent > 100)
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-600/30 text-red-200 border border-red-500/50">
+                            ⚠️ {{ app()->getLocale() === 'bn' ? 'কোটা অতিক্রান্ত (>১০০%)' : 'Quota Exceeded (>100%)' }}
+                        </span>
+                    @elseif($monthlyFuelPercent >= 80)
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-600/30 text-amber-200 border border-amber-500/50">
+                            ⚠️ {{ app()->getLocale() === 'bn' ? 'কোটার ৮০% শেষ' : '80% Quota Used' }}
+                        </span>
+                    @else
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-600/30 text-emerald-200 border border-emerald-500/50">
+                            ✓ {{ app()->getLocale() === 'bn' ? 'কোটা স্বাভাবিক' : 'Quota Normal' }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
+                <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ app()->getLocale() === 'bn' ? 'মাসিক বরাদ্দ' : 'Monthly Quota' }}</span>
+                    <span class="font-mono font-bold text-lg text-white">{{ number_format($monthlyFuelQuota, 1) }}</span>
+                    <span class="text-[10px] text-slate-400 block">Liters</span>
+                </div>
+                <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ app()->getLocale() === 'bn' ? 'চলতি মাসে ব্যবহৃত' : 'Consumed' }}</span>
+                    <span class="font-mono font-bold text-lg text-orange-400">{{ number_format($monthlyFuelConsumed, 1) }}</span>
+                    <span class="text-[10px] text-slate-400 block">Liters ({{ $monthlyFuelPercent }}%)</span>
+                </div>
+                <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ app()->getLocale() === 'bn' ? 'অবশিষ্ট কোটা' : 'Remaining' }}</span>
+                    <span class="font-mono font-bold text-lg {{ $monthlyFuelRemaining < 0 ? 'text-red-400' : 'text-emerald-400' }}">
+                        {{ number_format($monthlyFuelRemaining, 1) }}
+                    </span>
+                    <span class="text-[10px] text-slate-400 block">Liters</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div>
+                <div class="w-full bg-white/10 rounded-full h-3 overflow-hidden p-0.5">
+                    <div class="h-full rounded-full transition-all duration-500 {{ $monthlyFuelPercent > 100 ? 'bg-red-500' : ($monthlyFuelPercent >= 80 ? 'bg-amber-500' : 'bg-emerald-500') }}"
+                         style="width: {{ min(100, $monthlyFuelPercent) }}%"></div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
     <!-- Section 1: Fuel Refill Entry Form -->
     <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">

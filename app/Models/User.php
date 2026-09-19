@@ -81,4 +81,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(MaintenanceRecord::class, 'erp_requisition_tagged_by');
     }
+
+    public function securityGateLogs(): HasMany
+    {
+        return $this->hasMany(VehicleGateLog::class, 'security_guard_id');
+    }
 }
