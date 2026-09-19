@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Company;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\User;
 use App\Services\Audit\DistanceAuditService;
 use App\Services\Routing\RouteResult;
@@ -18,8 +18,8 @@ test('distance audit flags trip anomaly when claimed exceeds expected by more th
         'password' => bcrypt('secret'),
     ]);
 
-    $trip = TripRequisition::create([
-        'requisition_no' => 'REQ-TEST-001',
+    $trip = TripRequest::create([
+        'request_no' => 'TR-TEST-001',
         'company_id' => $company->id,
         'requester_id' => $user->id,
         'origin_name' => 'Head Office Dhaka',
@@ -55,8 +55,8 @@ test('distance audit approves normal trip within 15% variance', function () {
         'password' => bcrypt('secret'),
     ]);
 
-    $trip = TripRequisition::create([
-        'requisition_no' => 'REQ-TEST-002',
+    $trip = TripRequest::create([
+        'request_no' => 'TR-TEST-002',
         'company_id' => $company->id,
         'requester_id' => $user->id,
         'origin_name' => 'Head Office Dhaka',

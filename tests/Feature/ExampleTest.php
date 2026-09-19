@@ -1,7 +1,7 @@
 <?php
 
-test('home redirects to trip requisition portal', function () {
+test('home redirects to trip request portal', function () {
     $response = $this->get('/');
 
-    $response->assertRedirect('/portal/requisitions');
+    $response->assertRedirect('/portal/requests');
 });

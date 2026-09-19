@@ -4,7 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Driver;
 use App\Models\FuelLog;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\Vehicle;
 use App\Models\VehicleCompliance;
 use Filament\Widgets\StatsOverviewWidget;
@@ -19,7 +19,7 @@ class FleetOverviewWidget extends StatsOverviewWidget
         $activeVehiclesCount = Vehicle::where('is_active', true)->count();
         $activeDriversCount = Driver::where('is_active', true)->count();
 
-        $distanceAnomaliesCount = TripRequisition::where('is_distance_anomaly', true)->count();
+        $distanceAnomaliesCount = TripRequest::where('is_distance_anomaly', true)->count();
         $fuelAnomaliesCount = FuelLog::where('is_efficiency_anomaly', true)->count();
         $totalAnomalies = $distanceAnomaliesCount + $fuelAnomaliesCount;
 

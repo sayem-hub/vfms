@@ -3,7 +3,7 @@
 use App\Models\Company;
 use App\Models\Driver;
 use App\Models\TripExpenseSettlement;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\User;
 use App\Services\Settlement\TripExpenseSettlementService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,8 +31,8 @@ test('trip expense settlement accurately calculates advance vs actual expense ba
         'phone' => '01912000000',
     ]);
 
-    $trip = TripRequisition::create([
-        'requisition_no' => 'REQ-SETTLE-001',
+    $trip = TripRequest::create([
+        'request_no' => 'TR-SETTLE-001',
         'company_id' => $company->id,
         'requester_id' => $user->id,
         'driver_id' => $driver->id,
@@ -43,7 +43,7 @@ test('trip expense settlement accurately calculates advance vs actual expense ba
 
     // Driver received BDT 10,000 cash advance
     $settlement = TripExpenseSettlement::create([
-        'trip_requisition_id' => $trip->id,
+        'trip_request_id' => $trip->id,
         'driver_id' => $driver->id,
         'advance_cash_received' => 10000.0,
         'advance_received_from_user_id' => $cashier->id,

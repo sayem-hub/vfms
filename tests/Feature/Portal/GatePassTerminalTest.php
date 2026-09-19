@@ -3,7 +3,7 @@
 use App\Livewire\Portal\GatePassTerminal;
 use App\Models\Company;
 use App\Models\Driver;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,8 +35,8 @@ test('security guard can record gate out and gate in', function () {
         'phone' => '01719999999',
     ]);
 
-    $trip = TripRequisition::create([
-        'requisition_no' => 'REQ-GATE-001',
+    $trip = TripRequest::create([
+        'request_no' => 'TR-GATE-001',
         'company_id' => $company->id,
         'requester_id' => $user->id,
         'vehicle_id' => $vehicle->id,

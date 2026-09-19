@@ -1,24 +1,23 @@
 <?php
 
-namespace App\Filament\Resources\TripRequisitions\Schemas;
+namespace App\Filament\Resources\TripRequests\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
-class TripRequisitionForm
+class TripRequestForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('requisition_no')
-                    ->label(fn () => __('vfms.requisition_no'))
-                    ->default(fn () => 'REQ-'.date('Ymd').'-'.strtoupper(substr(uniqid(), -4)))
+                TextInput::make('request_no')
+                    ->label(fn () => __('vfms.trip_request_no'))
+                    ->default(fn () => 'TR-'.date('Ymd').'-'.strtoupper(substr(uniqid(), -4)))
                     ->required()
                     ->unique(ignoreRecord: true),
                 Select::make('company_id')
@@ -99,22 +98,6 @@ class TripRequisitionForm
                 Textarea::make('anomaly_justification')
                     ->label(fn () => __('vfms.anomaly_justification'))
                     ->columnSpanFull(),
-
-                // Custom ERP Verification Fields
-                TextInput::make('erp_requisition_no')
-                    ->label(fn () => __('vfms.erp_requisition_no')),
-                FileUpload::make('erp_requisition_copy')
-                    ->label(fn () => __('vfms.erp_requisition_copy'))
-                    ->disk('public')
-                    ->directory('erp/requisitions')
-                    ->acceptedFileTypes(['image/*', 'application/pdf', 'application/msword']),
-                TextInput::make('erp_gatepass_no')
-                    ->label(fn () => __('vfms.erp_gatepass_no')),
-                FileUpload::make('erp_gatepass_copy')
-                    ->label(fn () => __('vfms.erp_gatepass_copy'))
-                    ->disk('public')
-                    ->directory('erp/gatepasses')
-                    ->acceptedFileTypes(['image/*', 'application/pdf']),
 
                 Select::make('status')
                     ->label(fn () => __('vfms.status'))

@@ -21,12 +21,14 @@ In a multi-location knit composite textile & garments conglomerate in Bangladesh
 2. **Cash Advance / Petty Cash / Voucher-Based Fuel & Expense Model**:
    - No corporate pump fuel credit contracts. Drivers receive cash advances prior to trips or submit vouchers/bills for post-trip reimbursement.
    - Requires full trip expense settlement: Cash Advance vs (Fuel + Toll + Parking + DA/Food + Repair) = Balance Refund or Due.
-3. **Custom ERP Verification & Audit Integration**:
-   - Direct manual cross-referencing fields (`erp_requisition_no`, `erp_requisition_copy`, `erp_gatepass_no`, `erp_gatepass_copy`) to enable accounts to audit against ERP documents before passing bills, plus automated API sync bridges.
-4. **Bilingual Support (English & Bengali / বাংলা) with Instant Toggling**:
+3. **Trip Bookings (Trip Requests)**:
+   - Vehicle trip bookings for staff, official duties, export cartons, and ambulances are classified as **Trip Requests** (`trip_requests`).
+4. **Custom ERP Verification & Maintenance Gate Pass Chain**:
+   - In accordance with NAZ Bangladesh Ltd / NZ Group workflow, ERP Requisitions (`SRQ` for Service, `RQSN` for Parts), Head Office (Baridhara DOHS) SCM Purchase Orders (`PO`), and ERP Returnable Gate Passes for sending parts to external repair vendors are managed within the **Maintenance & Workshop** module, anchored by manual handwritten approvals from the Admin Head.
+5. **Bilingual Support (English & Bengali / বাংলা) with Instant Toggling**:
    - Complete i18n localization across all portals and mobile views.
    - Built specifically for Bangladesh factory reality: Drivers, security gate guards, and mechanics can use the system completely in clear Bengali (বাংলা), while management and audit can toggle between English and বাংলা with a single click.
-5. **Pluggable Routing Engine**:
+6. **Pluggable Routing Engine**:
    - Default: Open-Source Routing Engine (OSRM / OpenStreetMap) with zero recurring cost.
    - Pluggable Driver Architecture: Configurable switch to Google Maps Distance Matrix API via `.env` without modifying business logic.
 
@@ -225,11 +227,11 @@ erDiagram
 
 ---
 
-### 4.3. Trip Requisitions, ERP Bridges & Distance Auditing
+### 4.3. Trip Requests & Distance Auditing
 
-* **`trip_requisitions`**:
+* **`trip_requests`**:
   * `id` (PK)
-  * `requisition_no` (string, unique, e.g., "REQ-2026-0001")
+  * `request_no` (string, unique, e.g., "REQ-2026-0001" or "TR-2026-0001")
   * `company_id` (FK -> `companies.id`)
   * `factory_unit_id` (FK -> `factory_units.id`)
   * `requester_id` (FK -> `users.id`)
@@ -253,14 +255,6 @@ erDiagram
   * `is_distance_anomaly` (boolean, default false)
   * `anomaly_justification` (text, nullable)
   * `anomaly_reviewed_by` (FK -> `users.id`, nullable)
-  * **Custom ERP Audit & Sync Fields**:
-    * `erp_requisition_no` (string, nullable, indexed) — *ERP Requisition/Indent No*
-    * `erp_requisition_copy` (string, nullable) — *Attachment PDF/Image/Doc*
-    * `erp_gatepass_no` (string, nullable, indexed) — *ERP Factory Security Gate Pass No*
-    * `erp_gatepass_copy` (string, nullable) — *Attachment PDF/Image/Doc*
-    * `erp_sync_status` (enum: `NOT_SYNCED`, `PENDING`, `SYNCED`, `FAILED`, default `NOT_SYNCED`)
-    * `erp_synced_at` (timestamp, nullable)
-    * `erp_sync_payload` (json, nullable)
   * `status` (enum: `SUBMITTED`, `HOD_APPROVED`, `DISPATCHED`, `GATE_OUT`, `IN_TRIP`, `GATE_IN`, `COMPLETED`, `CANCELLED`, `REJECTED`)
   * `timestamps`
 
@@ -335,7 +329,8 @@ erDiagram
 
 ---
 
-### 4.5. Workshop Maintenance & Scrap Surrender Chain
+### 4.5. Workshop Maintenance, ERP Requisitions & Scrap Surrender Chain
+*(Aligned with NAZ Bangladesh Ltd / NZ Group Practice)*
 
 * **`maintenance_records`**:
   * `id` (PK)
@@ -350,14 +345,40 @@ erDiagram
   * `parts_total_cost` (decimal 10,2, default 0)
   * `labor_total_cost` (decimal 10,2, default 0)
   * `grand_total_cost` (decimal 10,2)
-  * `requires_old_parts_surrender` (boolean, default true)
-  * `is_old_parts_surrendered` (boolean, default false)
-  * `store_acknowledged_by` (FK -> `users.id`, nullable, Store Officer)
-  * `store_acknowledged_at` (datetime, nullable)
-  * **Custom ERP Fields**:
-    * `erp_pr_po_no` (string, nullable) — *Purchase Requisition / Order in ERP*
-    * `erp_document_copy` (string, nullable)
-  * `payment_status` (enum: `PENDING_PARTS_SURRENDER`, `READY_FOR_PAYMENT`, `PAID`, `CANCELLED`)
+
+  * **1. Digital Pre-Requisition in VFMS (Eliminates handwritten paper)**:
+    * `pre_requisition_no` (string, unique, e.g., "MPR-2026-0001")
+    * `transport_requester_id` (FK -> `users.id` — *Transport Incharge who initiated*)
+    * `admin_head_id` (FK -> `users.id`, nullable — *Admin Head who approved digitally*)
+    * `admin_approval_status` (enum: `DRAFT`, `PENDING_ADMIN_APPROVAL`, `APPROVED_BY_ADMIN`, `REJECTED_BY_ADMIN`, default `PENDING_ADMIN_APPROVAL`)
+    * `admin_approved_at` (datetime, nullable)
+    * `admin_remarks` (text, nullable)
+    * `estimated_cost` (decimal 10,2, default 0)
+
+  * **2. ERP Requisition Tagging (Created by Store Concern post-approval, tagged by Transport)**:
+    * `erp_requisition_type` (enum: `SERVICE_REQUISITION`, `PARTS_REQUISITION`, default `SERVICE_REQUISITION`)
+      * `SERVICE_REQUISITION` (SRQ): E.g. `NAZBL-SRQ-26-00389` (Denting, painting, gear calibration, EFI wiring, AC wash)
+      * `PARTS_REQUISITION` (RQSN): E.g. `NAZBL-RQSN-26-02116` (Switch nozzle, air filters, tyres, battery, O-rings)
+    * `erp_requisition_no` (string, nullable, indexed — e.g. `NAZBL-SRQ-26-00389`, `NAZBL-RQSN-26-02116`)
+    * `erp_requisition_date` (date, nullable)
+    * `erp_requisition_copy` (string, nullable — *ERP printout PDF/image*)
+    * `erp_requisition_tagged_at` (datetime, nullable)
+    * `erp_requisition_tagged_by` (FK -> `users.id`, nullable)
+
+  * **3. ERP Gate Pass (For sending parts to external vendor to repair)**:
+    * `needs_vendor_repair_gatepass` (boolean, default false)
+    * `erp_gatepass_no` (string, nullable, indexed — e.g. `GP-BKBARI-2026-0145`)
+    * `erp_gatepass_type` (enum: `RETURNABLE_GATE_PASS`, `NON_RETURNABLE_GATE_PASS`, default `RETURNABLE_GATE_PASS`)
+    * `erp_gatepass_copy` (string, nullable — *ERP Gate Pass scan/photo*)
+    * `parts_sent_to_vendor_at` (datetime, nullable)
+    * `parts_returned_from_vendor_at` (datetime, nullable)
+
+  * **4. Store Old Scrap Parts Surrender & Payment Control**:
+    * `requires_old_parts_surrender` (boolean, default true)
+    * `is_old_parts_surrendered` (boolean, default false)
+    * `store_acknowledged_by` (FK -> `users.id`, nullable, Store Officer)
+    * `store_acknowledged_at` (datetime, nullable)
+    * `status` (enum: `PENDING_ADMIN_APPROVAL`, `ADMIN_APPROVED_AWAITING_ERP`, `ERP_REQ_TAGGED`, `PARTS_SENT_TO_VENDOR`, `UNDER_SERVICE`, `PENDING_PARTS_SURRENDER`, `COMPLETED`, `REJECTED`)
   * `timestamps`
 
 * **`scrap_parts_surrenders`**:

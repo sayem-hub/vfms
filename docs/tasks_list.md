@@ -125,15 +125,18 @@
   - [x] Itemized trip expenses (Tolls, Parking, Daily Food Allowance / DA, Emergency Repairs)
   - [x] Live petty cash settlement balance calculator: $(\text{Advance Cash} - \text{Total Actual Expenses})$ with instant refundable/payable breakdown and submission to accounts
 
-- [x] **NZ Group Internal Enterprise Branding & Color Theme**
-  - [x] Integrated `nz-group.png` corporate logo in main header (preceding "VFMS") and in the footer
-  - [x] Admin Panel Provider brand logo, height, and Orange (`#FA5514` / `#ea580c`) theme configuration
-  - [x] Transformed Livewire v4 portals (Trip Requisition, Gate-Pass Terminal, Driver Field Portal) to match the dark slate & NZ Group orange aesthetic
-  - [x] Purged all marketing fluff/buzzwords to maintain an internal conglomerate operations tone
-  - [x] Updated English and Bengali localization packages to "NZ Group - VFMS"
+- [x] **ERP Requisition & Gate Pass Workflow Realignment (Maintenance & Trip Booking)**
+  - [x] **Elimination of Handwritten Paper Memos**: Digital Pre-Requisition (`MPR-202609-xxx`) created by Transport Incharge directly within VFMS
+  - [x] **Admin Head Digital Approval**: Admin Head reviews and digitally approves/rejects pre-requisitions in VFMS (`APPROVED_BY_ADMIN`)
+  - [x] **Central Store ERP Requisition Tagging**: Store concern creates formal ERP requisitions (Service Requisitions `SRQ` e.g. `NAZBL-SRQ-26-00389` or Parts Requisitions `RQSN` e.g. `NAZBL-RQSN-26-02116`), and Transport concern tags the ERP requisition number & document copy in VFMS
+  - [x] **Vendor Repair Gate Pass**: Returnable / Non-Returnable Gate Pass tracking (`GP-2026-xxx`) for parts or assemblies sent outside to vendors for repair/lathe work
+  - [x] **Central Store Scrap Surrender**: Store Officer acknowledges old replaced parts before payment status is unlocked to `READY_FOR_PAYMENT`
+  - [x] **PO Tracking Excluded**: Head Office Baridhara DOHS SCM work is deliberately kept outside VFMS per instructions
+  - [x] **Trip Booking Domain Refactoring**: Renamed all trip booking entities from "Requisition" to "Request" (`TripRequest`, `trip_requests`, `request_no`), and purged misplaced ERP requisition/gatepass fields from trip booking
 
-- [x] **Automated Test Suite for Portals**
-  - [x] 18 Pest tests passing with 65 assertions (`php artisan test`)
+- [x] **Automated Test Suite for Portals & Operations**
+  - [x] 19 Pest tests passing with 75 assertions (`php artisan test`)
+  - [x] Laravel Pint code styling & PSR-12 formatting applied cleanly (`pint --test` passed)
 
 ---
 

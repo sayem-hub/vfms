@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Portal;
 
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Services\Audit\DistanceAuditService;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -30,7 +30,7 @@ class GatePassTerminal extends Component
     public function mount(): void
     {
         // Default select latest trip that is dispatched or in trip
-        $activeTrip = TripRequisition::whereIn('status', ['HOD_APPROVED', 'DISPATCHED', 'GATE_OUT', 'IN_TRIP'])
+        $activeTrip = TripRequest::whereIn('status', ['HOD_APPROVED', 'DISPATCHED', 'GATE_OUT', 'IN_TRIP'])
             ->latest()
             ->first();
 
@@ -42,7 +42,7 @@ class GatePassTerminal extends Component
     public function selectTrip(int $id): void
     {
         $this->selectedTripId = $id;
-        $trip = TripRequisition::with(['vehicle', 'driver'])->find($id);
+        $trip = TripRequest::with(['vehicle', 'driver'])->find($id);
 
         if ($trip) {
             $this->start_odometer = $trip->start_odometer ?? $trip->vehicle?->current_odometer;
@@ -58,7 +58,7 @@ class GatePassTerminal extends Component
             'start_odometer' => 'required|numeric|min:0',
         ]);
 
-        $trip = TripRequisition::with('vehicle')->findOrFail($this->selectedTripId);
+        $trip = TripRequest::with('vehicle')->findOrFail($this->selectedTripId);
 
         $trip->update([
             'start_odometer' => $this->start_odometer,
@@ -80,7 +80,7 @@ class GatePassTerminal extends Component
 
     public function recordGateIn(DistanceAuditService $auditService): void
     {
-        $trip = TripRequisition::with('vehicle')->findOrFail($this->selectedTripId);
+        $trip = TripRequest::with('vehicle')->findOrFail($this->selectedTripId);
 
         $this->validate([
             'end_odometer' => [
@@ -126,18 +126,17 @@ class GatePassTerminal extends Component
     {
         $selectedTrip = null;
         if ($this->selectedTripId) {
-            $selectedTrip = TripRequisition::with(['vehicle', 'driver', 'requester', 'factoryUnit'])->find($this->selectedTripId);
+            $selectedTrip = TripRequest::with(['vehicle', 'driver', 'requester', 'factoryUnit'])->find($this->selectedTripId);
         }
 
-        $tripsQuery = TripRequisition::with(['vehicle', 'driver'])
+        $tripsQuery = TripRequest::with(['vehicle', 'driver'])
             ->whereIn('status', ['HOD_APPROVED', 'DISPATCHED', 'GATE_OUT', 'IN_TRIP', 'COMPLETED'])
             ->latest();
 
         if (! empty($this->searchQuery)) {
             $query = '%'.trim($this->searchQuery).'%';
             $tripsQuery->where(function ($q) use ($query) {
-                $q->where('requisition_no', 'like', $query)
-                    ->orWhere('erp_gatepass_no', 'like', $query)
+                $q->where('request_no', 'like', $query)
                     ->orWhereHas('vehicle', fn ($v) => $v->where('registration_no', 'like', $query))
                     ->orWhereHas('driver', fn ($d) => $d->where('name', 'like', $query)->orWhere('office_id_card', 'like', $query));
             });

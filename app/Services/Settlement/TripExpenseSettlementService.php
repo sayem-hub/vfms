@@ -12,9 +12,9 @@ class TripExpenseSettlementService
      */
     public function syncAndCalculate(TripExpenseSettlement $settlement): TripExpenseSettlement
     {
-        // 1. Auto-sum fuel expenses logged under this trip requisition if applicable
-        if ($settlement->trip_requisition_id) {
-            $totalFuel = FuelLog::where('trip_requisition_id', $settlement->trip_requisition_id)
+        // 1. Auto-sum fuel expenses logged under this trip request if applicable
+        if ($settlement->trip_request_id) {
+            $totalFuel = FuelLog::where('trip_request_id', $settlement->trip_request_id)
                 ->sum('total_cost');
 
             if ($totalFuel > 0) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\TripRequisitions\Tables;
+namespace App\Filament\Resources\TripRequests\Tables;
 
 use App\Services\Audit\DistanceAuditService;
 use Filament\Actions\Action;
@@ -13,14 +13,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class TripRequisitionsTable
+class TripRequestsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('requisition_no')
-                    ->label(fn () => __('vfms.requisition_no'))
+                TextColumn::make('request_no')
+                    ->label(fn () => __('vfms.trip_request_no'))
                     ->badge()
                     ->color('primary')
                     ->searchable()
@@ -58,11 +58,6 @@ class TripRequisitionsTable
                     ->badge()
                     ->state(fn ($record) => $record->is_distance_anomaly ? '⚠️ সতর্কতা (Anomaly >15%)' : 'স্বাভাবিক (Normal)')
                     ->color(fn ($record) => $record->is_distance_anomaly ? 'danger' : 'success'),
-                TextColumn::make('erp_gatepass_no')
-                    ->label(fn () => __('vfms.erp_gatepass_no'))
-                    ->badge()
-                    ->color('gray')
-                    ->searchable(),
                 TextColumn::make('status')
                     ->label(fn () => __('vfms.status'))
                     ->badge()
@@ -98,17 +93,24 @@ class TripRequisitionsTable
             ])
             ->recordActions([
                 Action::make('audit_distance')
-                    ->label('Audit Distance (দূরত্ব অডিট)')
-                    ->icon(Heroicon::OutlinedCalculator)
+                    ->label('Audit Distance (অডিট)')
+                    ->icon(Heroicon::OutlinedScale)
                     ->color('warning')
                     ->action(function ($record, DistanceAuditService $auditService) {
                         $auditService->auditTrip($record);
-                        Notification::make()
-                            ->title('Distance Audited Successfully')
-                            ->body($record->is_distance_anomaly
-                                ? "⚠️ Flagged Anomaly! Variance: {$record->distance_variance_percentage}%"
-                                : "✅ Normal trip distance verified. Variance: {$record->distance_variance_percentage}%")
-                            ->send();
+
+                        if ($record->is_distance_anomaly) {
+                            Notification::make()
+                                ->danger()
+                                ->title('দূরত্ব সংক্রান্ত গরমিল শনাক্ত!')
+                                ->body("ক্লেইমকৃত দূরত্ব প্রত্যাশিত দূরত্বের চেয়ে {$record->distance_variance_percentage}% বেশি।")
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->success()
+                                ->title('অডিট সফল: দূরত্ব গ্রহণযোগ্য সীমার মধ্যে রয়েছে।')
+                                ->send();
+                        }
                     }),
                 EditAction::make(),
             ])

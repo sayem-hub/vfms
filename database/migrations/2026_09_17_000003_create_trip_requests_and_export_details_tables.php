@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trip_requisitions', function (Blueprint $table) {
+        Schema::create('trip_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('requisition_no', 40)->unique();
+            $table->string('request_no', 40)->unique();
             $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
             $table->foreignId('factory_unit_id')->nullable()->constrained('factory_units')->nullOnDelete();
             $table->foreignId('requester_id')->constrained('users')->cascadeOnDelete();
@@ -47,15 +47,6 @@ return new class extends Migration
             $table->text('anomaly_justification')->nullable();
             $table->foreignId('anomaly_reviewed_by')->nullable()->constrained('users')->nullOnDelete();
 
-            // Custom ERP Cross-Reference & Sync Fields
-            $table->string('erp_requisition_no', 60)->nullable()->index();
-            $table->string('erp_requisition_copy')->nullable();
-            $table->string('erp_gatepass_no', 60)->nullable()->index();
-            $table->string('erp_gatepass_copy')->nullable();
-            $table->enum('erp_sync_status', ['NOT_SYNCED', 'PENDING', 'SYNCED', 'FAILED'])->default('NOT_SYNCED');
-            $table->timestamp('erp_synced_at')->nullable();
-            $table->json('erp_sync_payload')->nullable();
-
             $table->enum('status', [
                 'SUBMITTED',
                 'HOD_APPROVED',
@@ -72,7 +63,7 @@ return new class extends Migration
 
         Schema::create('export_shipment_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('trip_requisition_id')->constrained('trip_requisitions')->cascadeOnDelete();
+            $table->foreignId('trip_request_id')->constrained('trip_requests')->cascadeOnDelete();
             $table->string('buyer_name', 100);
             $table->string('export_lc_no', 100)->nullable();
             $table->string('commercial_invoice_no', 100)->nullable();
@@ -98,6 +89,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('export_shipment_details');
-        Schema::dropIfExists('trip_requisitions');
+        Schema::dropIfExists('trip_requests');
     }
 };

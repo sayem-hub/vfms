@@ -2,7 +2,7 @@
 
 namespace App\Services\Audit;
 
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Services\Routing\RoutingManager;
 
 class DistanceAuditService
@@ -12,10 +12,10 @@ class DistanceAuditService
     ) {}
 
     /**
-     * Audit distance for a trip requisition.
+     * Audit distance for a trip request.
      * Compares claimed odometer difference against routed map distance.
      */
-    public function auditTrip(TripRequisition $trip): TripRequisition
+    public function auditTrip(TripRequest $trip): TripRequest
     {
         // 1. Compute claimed distance
         if ($trip->start_odometer !== null && $trip->end_odometer !== null) {

@@ -56,9 +56,9 @@
 
                         <!-- Navigation Links -->
                         <nav class="hidden md:flex space-x-1 pl-6">
-                            <a href="{{ route('portal.requisitions') }}" 
-                               class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.requisitions') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                                📝 {{ app()->getLocale() === 'bn' ? 'রিকুইজিশন পোর্টাল' : 'Trip Requisitions' }}
+                            <a href="{{ route('portal.requests') }}" 
+                               class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.requests') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                📝 {{ app()->getLocale() === 'bn' ? 'ট্রিপ রিকোয়েস্ট' : 'Trip Requests' }}
                             </a>
                             <a href="{{ route('portal.gate-pass') }}" 
                                class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.gate-pass') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">

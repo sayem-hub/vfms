@@ -2,17 +2,21 @@
 
 use App\Livewire\Portal\DriverPortal;
 use App\Livewire\Portal\GatePassTerminal;
-use App\Livewire\Portal\TripRequisitionPortal;
+use App\Livewire\Portal\TripRequestPortal;
 use Illuminate\Support\Facades\Route;
 
-// Redirect root to Trip Requisition Portal
+// Redirect root to Trip Request Portal
 Route::get('/', function () {
-    return redirect()->route('portal.requisitions');
+    return redirect()->route('portal.requests');
 })->name('home');
 
 // Front-Office & Field Portals
 Route::prefix('portal')->name('portal.')->group(function () {
-    Route::get('/requisitions', TripRequisitionPortal::class)->name('requisitions');
+    Route::get('/requests', TripRequestPortal::class)->name('requests');
+    // Backward compatibility redirect for old URL
+    Route::get('/requisitions', function () {
+        return redirect()->route('portal.requests');
+    })->name('requisitions');
     Route::get('/gate-pass', GatePassTerminal::class)->name('gate-pass');
     Route::get('/driver', DriverPortal::class)->name('driver');
 });

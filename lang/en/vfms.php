@@ -53,6 +53,9 @@ return [
 
     // Requisitions & Trips
     'requisition_no' => 'Requisition No',
+    'trip_requests' => 'Trip Requests',
+    'trip_request' => 'Trip Request',
+    'trip_request_no' => 'Trip Request No',
     'trip_type' => 'Trip Type',
     'purpose' => 'Purpose',
     'origin' => 'Origin',
@@ -65,11 +68,21 @@ return [
     'distance_anomaly' => 'Distance Anomaly Detected (>15%)',
     'anomaly_justification' => 'Anomaly Justification',
 
-    // ERP Fields
-    'erp_requisition_no' => 'ERP Requisition / Indent No',
+    // ERP & Pre-Requisition Fields
+    'pre_requisition_no' => 'Pre-Requisition No',
+    'admin_approval' => 'Admin Head Digital Approval',
+    'admin_approval_status' => 'Admin Approval Status',
+    'estimated_cost' => 'Estimated Cost (BDT)',
+    'erp_requisition_type' => 'ERP Requisition Type',
+    'erp_requisition_no' => 'ERP Requisition No',
     'erp_requisition_copy' => 'ERP Requisition Copy (Document)',
+    'erp_requisition_date' => 'ERP Requisition Date',
+    'tag_erp_requisition' => 'Tag ERP Requisition',
     'erp_gatepass_no' => 'ERP Gate Pass No',
+    'erp_gatepass_type' => 'ERP Gate Pass Type',
     'erp_gatepass_copy' => 'ERP Gate Pass Copy (Document)',
+    'parts_sent_to_vendor' => 'Parts Sent to Vendor Date',
+    'parts_returned_from_vendor' => 'Parts Returned Date',
     'erp_sync_status' => 'ERP Sync Status',
 
     // Fuel & Petty Cash

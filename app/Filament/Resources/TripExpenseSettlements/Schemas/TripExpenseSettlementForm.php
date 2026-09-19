@@ -13,8 +13,9 @@ class TripExpenseSettlementForm
     {
         return $schema
             ->components([
-                Select::make('trip_requisition_id')
-                    ->relationship('tripRequisition', 'id')
+                Select::make('trip_request_id')
+                    ->label(fn () => __('vfms.trip_request_no'))
+                    ->relationship('tripRequest', 'request_no')
                     ->required(),
                 Select::make('driver_id')
                     ->relationship('driver', 'name')

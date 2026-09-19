@@ -42,9 +42,9 @@ class Driver extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function tripRequisitions(): HasMany
+    public function tripRequests(): HasMany
     {
-        return $this->hasMany(TripRequisition::class);
+        return $this->hasMany(TripRequest::class);
     }
 
     public function fuelLogs(): HasMany

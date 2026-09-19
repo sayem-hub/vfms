@@ -53,6 +53,9 @@ return [
 
     // Requisitions & Trips
     'requisition_no' => 'রিকুইজিশন নম্বর',
+    'trip_requests' => 'ট্রিপ রিকোয়েস্ট',
+    'trip_request' => 'ট্রিপ রিকোয়েস্ট',
+    'trip_request_no' => 'ট্রিপ রিকোয়েস্ট নম্বর',
     'trip_type' => 'ট্রিপের ধরন',
     'purpose' => 'যাত্রার উদ্দেশ্য',
     'origin' => 'যাত্রার প্রস্থানস্থল',
@@ -65,11 +68,21 @@ return [
     'distance_anomaly' => 'অস্বাভাবিক দূরত্বের সতর্কতা (>১৫%)',
     'anomaly_justification' => 'অতিরিক্ত দূরত্বের যৌক্তিক কারণ',
 
-    // ERP Fields
-    'erp_requisition_no' => 'ইআরপি (ERP) রিকুইজিশন / ইনডেন্ট নম্বর',
+    // ERP & Pre-Requisition Fields
+    'pre_requisition_no' => 'প্রি-রিকুইজিশন নম্বর',
+    'admin_approval' => 'এডমিন হেড ডিজিটাল অনুমোদন',
+    'admin_approval_status' => 'এডমিন অনুমোদনের অবস্থা',
+    'estimated_cost' => 'আনুমানিক খরচ (টাকা)',
+    'erp_requisition_type' => 'ইআরপি রিকুইজিশনের ধরন',
+    'erp_requisition_no' => 'ইআরপি রিকুইজিশন নম্বর',
     'erp_requisition_copy' => 'ইআরপি রিকুইজিশন কপি (নথি)',
-    'erp_gatepass_no' => 'ইআরপি ফ্যাক্টরি গেট পাস নম্বর',
+    'erp_requisition_date' => 'ইআরপি রিকুইজিশন তারিখ',
+    'tag_erp_requisition' => 'ইআরপি রিকুইজিশন নম্বর ট্যাগ করুন',
+    'erp_gatepass_no' => 'ইআরপি গেট পাস নম্বর',
+    'erp_gatepass_type' => 'ইআরপি গেট পাস ধরন',
     'erp_gatepass_copy' => 'ইআরপি গেট পাস কপি (নথি)',
+    'parts_sent_to_vendor' => 'পার্টস ভেন্ডরে প্রেরণের তারিখ',
+    'parts_returned_from_vendor' => 'মেরামত শেষে পার্টস ফেরত আসার তারিখ',
     'erp_sync_status' => 'ইআরপি সিঙ্ক অবস্থা',
 
     // Fuel & Petty Cash

@@ -15,9 +15,9 @@ class FuelLogForm
     {
         return $schema
             ->components([
-                Select::make('trip_requisition_id')
-                    ->label(fn () => __('vfms.requisition_no'))
-                    ->relationship('tripRequisition', 'requisition_no')
+                Select::make('trip_request_id')
+                    ->label(fn () => __('vfms.trip_request_no'))
+                    ->relationship('tripRequest', 'request_no')
                     ->searchable()
                     ->preload(),
                 Select::make('vehicle_id')

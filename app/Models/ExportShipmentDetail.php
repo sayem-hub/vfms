@@ -26,8 +26,8 @@ class ExportShipmentDetail extends Model
         ];
     }
 
-    public function tripRequisition(): BelongsTo
+    public function tripRequest(): BelongsTo
     {
-        return $this->belongsTo(TripRequisition::class);
+        return $this->belongsTo(TripRequest::class, 'trip_request_id');
     }
 }

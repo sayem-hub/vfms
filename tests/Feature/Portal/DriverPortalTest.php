@@ -4,7 +4,7 @@ use App\Livewire\Portal\DriverPortal;
 use App\Models\Company;
 use App\Models\Driver;
 use App\Models\TripExpenseSettlement;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -46,8 +46,8 @@ test('driver can submit fuel refill log and recalculate settlement', function ()
         'current_vehicle_id' => $vehicle->id,
     ]);
 
-    $trip = TripRequisition::create([
-        'requisition_no' => 'REQ-TRIP-SALAM',
+    $trip = TripRequest::create([
+        'request_no' => 'TR-TRIP-SALAM',
         'company_id' => $company->id,
         'requester_id' => $user->id,
         'vehicle_id' => $vehicle->id,
@@ -60,7 +60,7 @@ test('driver can submit fuel refill log and recalculate settlement', function ()
 
     // Initial cash advance
     TripExpenseSettlement::create([
-        'trip_requisition_id' => $trip->id,
+        'trip_request_id' => $trip->id,
         'driver_id' => $driver->id,
         'advance_cash_received' => 5000.0,
     ]);
@@ -88,7 +88,7 @@ test('driver can submit fuel refill log and recalculate settlement', function ()
         ->call('submitSettlement')
         ->assertSet('feedbackType', 'success');
 
-    $settlement = TripExpenseSettlement::where('trip_requisition_id', $trip->id)->first();
+    $settlement = TripExpenseSettlement::where('trip_request_id', $trip->id)->first();
     expect((float) $settlement->total_fuel_expense)->toEqual(3125.0)
         ->and((float) $settlement->total_toll_expense)->toEqual(400.0)
         ->and((float) $settlement->total_driver_food_allowance)->toEqual(300.0)

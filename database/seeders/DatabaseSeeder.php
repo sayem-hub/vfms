@@ -6,8 +6,9 @@ use App\Models\Company;
 use App\Models\Driver;
 use App\Models\FactoryUnit;
 use App\Models\FuelLog;
+use App\Models\MaintenanceRecord;
 use App\Models\TripExpenseSettlement;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehicleCompliance;
@@ -21,11 +22,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Default Admin & Accounts Users
+        // 1. Create Key Role Users (Admin, Admin Head, Transport Incharge, Store Officer, Cashier)
         $admin = User::firstOrCreate(
             ['email' => 'admin@vfms.com'],
             [
                 'name' => 'Transport General Manager',
+                'password' => Hash::make('password'),
+                'preferred_locale' => 'bn',
+            ]
+        );
+
+        $adminHead = User::firstOrCreate(
+            ['email' => 'adminhead@vfms.com'],
+            [
+                'name' => 'Head of Administration (NZ Group)',
+                'password' => Hash::make('password'),
+                'preferred_locale' => 'bn',
+            ]
+        );
+
+        $transportIncharge = User::firstOrCreate(
+            ['email' => 'transport@vfms.com'],
+            [
+                'name' => 'Transport Incharge (BK Bari Plant)',
+                'password' => Hash::make('password'),
+                'preferred_locale' => 'bn',
+            ]
+        );
+
+        $storeOfficer = User::firstOrCreate(
+            ['email' => 'store@vfms.com'],
+            [
+                'name' => 'Central Store Officer',
                 'password' => Hash::make('password'),
                 'preferred_locale' => 'bn',
             ]
@@ -44,14 +72,14 @@ class DatabaseSeeder extends Seeder
         $apex = Company::firstOrCreate(
             ['code' => 'NAZ'],
             [
-                'name' => 'NAZ Bangladesh Ltd',
+                'name' => 'N.A.Z. Bangladesh Ltd',
                 'address' => 'BK Bari, Gazipur',
                 'phone' => '+8801711001122',
                 'email' => 'info@nz-bd.com',
             ]
         );
 
-        $echo = Company::firstOrCreate(
+        $cakl = Company::firstOrCreate(
             ['code' => 'CAKL'],
             [
                 'name' => 'CA Knitwear Ltd',
@@ -65,20 +93,20 @@ class DatabaseSeeder extends Seeder
             ['location_code' => 'BKBARI'],
             [
                 'company_id' => $apex->id,
-                'name' => 'Garments and Textile',
-                'latitude' => 24.1850,
-                'longitude' => 90.4320,
+                'name' => 'Garments and Textile Complex',
+                'latitude' => 24.0400,
+                'longitude' => 90.3950,
                 'address' => 'BK Bari, Gazipur',
             ]
         );
 
-        $unitNarayanganj = FactoryUnit::firstOrCreate(
+        $unitBhobanipur = FactoryUnit::firstOrCreate(
             ['location_code' => 'BHBNPR'],
             [
-                'company_id' => $echo->id,
+                'company_id' => $cakl->id,
                 'name' => 'Garments Unit 2',
-                'latitude' => 23.6850,
-                'longitude' => 90.5120,
+                'latitude' => 24.1150,
+                'longitude' => 90.4120,
                 'address' => 'Bhobanipur, Gazipur',
             ]
         );
@@ -197,9 +225,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 6. Create Sample Trip Requisition with ERP Cross-References
-        $trip = TripRequisition::firstOrCreate(
-            ['requisition_no' => 'REQ-202609-001'],
+        // 6. Create Sample Trip Request
+        $trip = TripRequest::firstOrCreate(
+            ['request_no' => 'TR-202609-001'],
             [
                 'company_id' => $apex->id,
                 'factory_unit_id' => $unitGazipur->id,
@@ -207,13 +235,13 @@ class DatabaseSeeder extends Seeder
                 'vehicle_id' => $microbus->id,
                 'driver_id' => $driverRafiq->id,
                 'trip_type' => 'OFFICIAL_DUTY',
-                'purpose' => 'Management Audit & Buyer Compliance Visit at Mawna Unit',
-                'origin_name' => 'Corporate Head Office, Gulshan-2, Dhaka',
-                'destination_name' => 'Mawna Unit 1 Factory, Gazipur',
-                'origin_latitude' => 23.7925,
-                'origin_longitude' => 90.4078,
-                'destination_latitude' => 24.1850,
-                'destination_longitude' => 90.4320,
+                'purpose' => 'Management Audit & Buyer Compliance Visit at BK Bari Unit',
+                'origin_name' => 'Corporate Head Office, Baridhara DOHS, Dhaka',
+                'destination_name' => 'BK Bari Plant, NAZ Bangladesh Ltd, Gazipur',
+                'origin_latitude' => 23.8050,
+                'origin_longitude' => 90.4180,
+                'destination_latitude' => 24.0400,
+                'destination_longitude' => 90.3950,
                 'scheduled_start_time' => now()->subHours(8),
                 'scheduled_end_time' => now()->subHours(2),
                 'actual_start_time' => now()->subHours(8),
@@ -224,8 +252,6 @@ class DatabaseSeeder extends Seeder
                 'expected_distance_km' => 64.5,
                 'distance_variance_percentage' => 8.53,
                 'is_distance_anomaly' => false,
-                'erp_requisition_no' => 'ERP-INDENT-98124',
-                'erp_gatepass_no' => 'GP-GZP-2026-4412',
                 'status' => 'COMPLETED',
             ]
         );
@@ -234,7 +260,7 @@ class DatabaseSeeder extends Seeder
         FuelLog::firstOrCreate(
             ['odometer_reading' => 45200],
             [
-                'trip_requisition_id' => $trip->id,
+                'trip_request_id' => $trip->id,
                 'vehicle_id' => $microbus->id,
                 'driver_id' => $driverRafiq->id,
                 'fuel_type' => 'OCTANE',
@@ -251,7 +277,7 @@ class DatabaseSeeder extends Seeder
         );
 
         TripExpenseSettlement::firstOrCreate(
-            ['trip_requisition_id' => $trip->id],
+            ['trip_request_id' => $trip->id],
             [
                 'driver_id' => $driverRafiq->id,
                 'advance_cash_received' => 6000.0,
@@ -264,6 +290,114 @@ class DatabaseSeeder extends Seeder
                 'total_actual_expense' => 4600.0,
                 'balance_amount' => 1400.0, // Driver refunds BDT 1400 to cashier
                 'status' => 'AUDITED_BY_TRANSPORT',
+            ]
+        );
+
+        // 8. Create Maintenance Records with Pre-Requisition, Admin Digital Approval & ERP Tagging
+        // Record 1: Service Requisition (SRQ) - Body Denting/Painting approved & tagged
+        MaintenanceRecord::firstOrCreate(
+            ['pre_requisition_no' => 'MPR-202609-001'],
+            [
+                'work_order_no' => 'WO-202609-001',
+                'vehicle_id' => $microbus->id,
+                'maintenance_type' => 'ACCIDENT_BODYWORK',
+                'workshop_type' => 'EXTERNAL_VENDOR_GARAGE',
+                'vendor_name' => 'Bismillah Automobile Workshop, Gazipur',
+                'vendor_phone' => '01712334455',
+                'vendor_address' => 'Board Bazar, Gazipur',
+                'odometer_at_service' => 45000,
+                'service_date' => now()->subDays(5),
+                'service_description' => 'Rear left door denting, putty, surface prep, and 2K paint coat touch-up.',
+                'parts_total_cost' => 1200.00,
+                'labor_total_cost' => 3800.00,
+                'grand_total_cost' => 5000.00,
+                'transport_requester_id' => $transportIncharge->id,
+                'estimated_cost' => 5500.00,
+                'admin_head_id' => $adminHead->id,
+                'admin_approval_status' => 'APPROVED_BY_ADMIN',
+                'admin_approved_at' => now()->subDays(6),
+                'admin_remarks' => 'Approved as per site inspection report. Send to store for ERP SRQ generation.',
+                'erp_requisition_type' => 'SERVICE_REQUISITION',
+                'erp_requisition_no' => 'NAZBL-SRQ-26-00389',
+                'erp_requisition_date' => now()->subDays(5),
+                'erp_requisition_tagged_by' => $transportIncharge->id,
+                'erp_requisition_tagged_at' => now()->subDays(5),
+                'requires_old_parts_surrender' => false,
+                'is_old_parts_surrendered' => false,
+                'payment_status' => 'READY_FOR_PAYMENT',
+                'status' => 'ERP_REQ_TAGGED',
+            ]
+        );
+
+        // Record 2: Parts Requisition (RQSN) - Mobil, Filter & Brake replacement with Scrap Surrender
+        MaintenanceRecord::firstOrCreate(
+            ['pre_requisition_no' => 'MPR-202609-002'],
+            [
+                'work_order_no' => 'WO-202609-002',
+                'vehicle_id' => $coveredVan->id,
+                'maintenance_type' => 'SCHEDULED_PREVENTIVE',
+                'workshop_type' => 'FACTORY_IN_HOUSE_WORKSHOP',
+                'odometer_at_service' => 82000,
+                'service_date' => now()->subDays(2),
+                'service_description' => 'Engine oil Mobil Delvac 15W40 replacement, genuine Isuzu oil filter, air filter, fuel filter, and front brake shoe replacement.',
+                'parts_total_cost' => 14500.00,
+                'labor_total_cost' => 1500.00,
+                'grand_total_cost' => 16000.00,
+                'transport_requester_id' => $transportIncharge->id,
+                'estimated_cost' => 16500.00,
+                'admin_head_id' => $adminHead->id,
+                'admin_approval_status' => 'APPROVED_BY_ADMIN',
+                'admin_approved_at' => now()->subDays(3),
+                'admin_remarks' => 'Routine 10,000 KM service approved. Old brake shoes and filters must be surrendered to Central Store.',
+                'erp_requisition_type' => 'PARTS_REQUISITION',
+                'erp_requisition_no' => 'NAZBL-RQSN-26-02116',
+                'erp_requisition_date' => now()->subDays(2),
+                'erp_requisition_tagged_by' => $transportIncharge->id,
+                'erp_requisition_tagged_at' => now()->subDays(2),
+                'requires_old_parts_surrender' => true,
+                'is_old_parts_surrendered' => true,
+                'store_acknowledged_by' => $storeOfficer->id,
+                'store_acknowledged_at' => now()->subDay(),
+                'payment_status' => 'READY_FOR_PAYMENT',
+                'status' => 'COMPLETED',
+            ]
+        );
+
+        // Record 3: External Lathe Repair with Returnable Gate Pass (RGP)
+        MaintenanceRecord::firstOrCreate(
+            ['pre_requisition_no' => 'MPR-202609-003'],
+            [
+                'work_order_no' => 'WO-202609-003',
+                'vehicle_id' => $coveredVan->id,
+                'maintenance_type' => 'EMERGENCY_BREAKDOWN',
+                'workshop_type' => 'EXTERNAL_VENDOR_GARAGE',
+                'vendor_name' => 'Master Lathe Engineering Works, Joydebpur',
+                'vendor_phone' => '01819998877',
+                'odometer_at_service' => 82100,
+                'service_date' => now(),
+                'service_description' => 'Propeller shaft universal joint balancing and lathe bushing reshaping.',
+                'parts_total_cost' => 4500.00,
+                'labor_total_cost' => 2000.00,
+                'grand_total_cost' => 6500.00,
+                'transport_requester_id' => $transportIncharge->id,
+                'estimated_cost' => 7000.00,
+                'admin_head_id' => $adminHead->id,
+                'admin_approval_status' => 'APPROVED_BY_ADMIN',
+                'admin_approved_at' => now()->subHours(6),
+                'admin_remarks' => 'Approved for outside vendor lathe work under Returnable Gate Pass.',
+                'erp_requisition_type' => 'SERVICE_REQUISITION',
+                'erp_requisition_no' => 'NAZBL-SRQ-26-00395',
+                'erp_requisition_date' => now(),
+                'erp_requisition_tagged_by' => $transportIncharge->id,
+                'erp_requisition_tagged_at' => now()->subHours(4),
+                'needs_vendor_repair_gatepass' => true,
+                'erp_gatepass_type' => 'RETURNABLE_GATE_PASS',
+                'erp_gatepass_no' => 'GP-2026-00441',
+                'parts_sent_to_vendor_at' => now()->subHours(3),
+                'requires_old_parts_surrender' => true,
+                'is_old_parts_surrendered' => false,
+                'payment_status' => 'PENDING_PARTS_SURRENDER',
+                'status' => 'PARTS_SENT_TO_VENDOR',
             ]
         );
     }

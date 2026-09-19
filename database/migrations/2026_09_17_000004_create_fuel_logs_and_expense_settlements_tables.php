@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('fuel_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('trip_requisition_id')->nullable()->constrained('trip_requisitions')->nullOnDelete();
+            $table->foreignId('trip_request_id')->nullable()->constrained('trip_requests')->nullOnDelete();
             $table->foreignId('vehicle_id')->constrained('vehicles')->cascadeOnDelete();
             $table->foreignId('driver_id')->constrained('drivers')->cascadeOnDelete();
             $table->enum('fuel_type', [
@@ -49,7 +49,7 @@ return new class extends Migration
 
         Schema::create('trip_expense_settlements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('trip_requisition_id')->unique()->constrained('trip_requisitions')->cascadeOnDelete();
+            $table->foreignId('trip_request_id')->unique()->constrained('trip_requests')->cascadeOnDelete();
             $table->foreignId('driver_id')->constrained('drivers')->cascadeOnDelete();
             $table->decimal('advance_cash_received', 10, 2)->default(0);
             $table->foreignId('advance_received_from_user_id')->nullable()->constrained('users')->nullOnDelete();

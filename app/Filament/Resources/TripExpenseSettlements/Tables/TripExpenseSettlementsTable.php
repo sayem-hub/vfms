@@ -19,8 +19,8 @@ class TripExpenseSettlementsTable
     {
         return $table
             ->columns([
-                TextColumn::make('tripRequisition.requisition_no')
-                    ->label(fn () => __('vfms.requisition_no'))
+                TextColumn::make('tripRequest.request_no')
+                    ->label(fn () => __('vfms.trip_request_no'))
                     ->badge()
                     ->color('primary')
                     ->searchable()

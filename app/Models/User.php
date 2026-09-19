@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -52,5 +53,25 @@ class User extends Authenticatable
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    public function tripRequests(): HasMany
+    {
+        return $this->hasMany(TripRequest::class, 'requester_id');
+    }
+
+    public function transportPreRequisitions(): HasMany
+    {
+        return $this->hasMany(MaintenanceRecord::class, 'transport_requester_id');
+    }
+
+    public function adminApprovedMaintenance(): HasMany
+    {
+        return $this->hasMany(MaintenanceRecord::class, 'admin_head_id');
+    }
+
+    public function erpTaggedMaintenance(): HasMany
+    {
+        return $this->hasMany(MaintenanceRecord::class, 'erp_requisition_tagged_by');
     }
 }

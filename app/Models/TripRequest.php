@@ -8,19 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class TripRequisition extends Model
+class TripRequest extends Model
 {
     use HasFactory;
+
+    protected $table = 'trip_requests';
 
     protected $guarded = [];
 
     protected function casts(): array
     {
         return [
-            'origin_latitude' => 'float',
-            'origin_longitude' => 'float',
-            'destination_latitude' => 'float',
-            'destination_longitude' => 'float',
             'scheduled_start_time' => 'datetime',
             'scheduled_end_time' => 'datetime',
             'actual_start_time' => 'datetime',
@@ -31,8 +29,10 @@ class TripRequisition extends Model
             'expected_distance_km' => 'decimal:2',
             'distance_variance_percentage' => 'decimal:2',
             'is_distance_anomaly' => 'boolean',
-            'erp_synced_at' => 'datetime',
-            'erp_sync_payload' => 'array',
+            'origin_latitude' => 'decimal:7',
+            'origin_longitude' => 'decimal:7',
+            'destination_latitude' => 'decimal:7',
+            'destination_longitude' => 'decimal:7',
         ];
     }
 
@@ -68,16 +68,16 @@ class TripRequisition extends Model
 
     public function exportShipmentDetail(): HasOne
     {
-        return $this->hasOne(ExportShipmentDetail::class);
+        return $this->hasOne(ExportShipmentDetail::class, 'trip_request_id');
     }
 
     public function fuelLogs(): HasMany
     {
-        return $this->hasMany(FuelLog::class);
+        return $this->hasMany(FuelLog::class, 'trip_request_id');
     }
 
-    public function expenseSettlement(): HasOne
+    public function tripExpenseSettlement(): HasOne
     {
-        return $this->hasOne(TripExpenseSettlement::class);
+        return $this->hasOne(TripExpenseSettlement::class, 'trip_request_id');
     }
 }

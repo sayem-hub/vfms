@@ -81,7 +81,7 @@
                         </div>
                         <div class="text-[11px] text-slate-600 mt-1 flex items-center justify-between">
                             <span>👨‍✈️ {{ $trip->driver->name ?? 'No Driver' }}</span>
-                            <span class="font-mono text-[10px] text-slate-500">{{ $trip->requisition_no }}</span>
+                            <span class="font-mono text-[10px] text-slate-500">{{ $trip->request_no }}</span>
                         </div>
                         <div class="text-[11px] text-slate-500 truncate mt-1">
                             📍 {{ $trip->origin_name }} ➔ {{ $trip->destination_name }}
@@ -103,14 +103,9 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
                         <div>
                             <span class="text-xs text-slate-400 uppercase font-semibold tracking-wider">
-                                {{ app()->getLocale() === 'bn' ? 'রিকুইজিশন নম্বর' : 'Requisition No' }}:
+                                {{ app()->getLocale() === 'bn' ? 'ট্রিপ রিকোয়েস্ট নম্বর' : 'Trip Request No' }}:
                             </span>
-                            <span class="font-mono font-bold text-slate-800 text-sm ml-1">{{ $selectedTrip->requisition_no }}</span>
-                            @if($selectedTrip->erp_gatepass_no)
-                                <span class="ml-2 inline-block px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-mono text-xs font-bold">
-                                    ERP GP: {{ $selectedTrip->erp_gatepass_no }}
-                                </span>
-                            @endif
+                            <span class="font-mono font-bold text-slate-800 text-sm ml-1">{{ $selectedTrip->request_no }}</span>
                         </div>
                         <div>
                             <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider {{ $badgeColor }}">

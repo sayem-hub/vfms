@@ -5,7 +5,7 @@ namespace App\Livewire\Portal;
 use App\Models\Driver;
 use App\Models\FuelLog;
 use App\Models\TripExpenseSettlement;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\Vehicle;
 use App\Services\Audit\FuelEfficiencyService;
 use App\Services\Settlement\TripExpenseSettlementService;
@@ -86,7 +86,7 @@ class DriverPortal extends Component
             $this->fuel_type = $driver->currentVehicle?->fuel_type ?? 'OCTANE';
 
             // Find current active trip or latest trip for this driver
-            $trip = TripRequisition::where('driver_id', $driverId)
+            $trip = TripRequest::where('driver_id', $driverId)
                 ->whereIn('status', ['GATE_OUT', 'IN_TRIP', 'DISPATCHED', 'HOD_APPROVED', 'COMPLETED'])
                 ->latest()
                 ->first();
@@ -95,7 +95,7 @@ class DriverPortal extends Component
 
             // Load existing settlement if present
             if ($trip) {
-                $settlement = TripExpenseSettlement::where('trip_requisition_id', $trip->id)->first();
+                $settlement = TripExpenseSettlement::where('trip_request_id', $trip->id)->first();
                 if ($settlement) {
                     $this->advance_cash = (float) $settlement->advance_cash_received;
                     $this->toll_expense = (float) $settlement->total_toll_expense;
@@ -130,7 +130,7 @@ class DriverPortal extends Component
         $totalCost = round($this->fuel_quantity * $this->fuel_unit_price, 2);
 
         $fuelLog = new FuelLog([
-            'trip_requisition_id' => $this->activeTripId,
+            'trip_request_id' => $this->activeTripId,
             'vehicle_id' => $vehicle->id,
             'driver_id' => $driver->id,
             'fuel_type' => $this->fuel_type,
@@ -151,9 +151,9 @@ class DriverPortal extends Component
 
         // Update settlement fuel expense
         if ($this->activeTripId) {
-            $settlement = TripExpenseSettlement::firstOrNew(['trip_requisition_id' => $this->activeTripId]);
+            $settlement = TripExpenseSettlement::firstOrNew(['trip_request_id' => $this->activeTripId]);
             $settlement->driver_id = $driver->id;
-            $settlement->total_fuel_expense = FuelLog::where('trip_requisition_id', $this->activeTripId)->sum('total_cost');
+            $settlement->total_fuel_expense = FuelLog::where('trip_request_id', $this->activeTripId)->sum('total_cost');
             $settlement->recalculate();
             $settlement->save();
         }
@@ -182,7 +182,7 @@ class DriverPortal extends Component
             return;
         }
 
-        $settlement = TripExpenseSettlement::firstOrNew(['trip_requisition_id' => $this->activeTripId]);
+        $settlement = TripExpenseSettlement::firstOrNew(['trip_request_id' => $this->activeTripId]);
         $settlement->driver_id = $this->selectedDriverId;
         $settlement->advance_cash_received = $this->advance_cash;
         $settlement->total_toll_expense = $this->toll_expense;
@@ -209,8 +209,8 @@ class DriverPortal extends Component
         $totalFuelCost = 0.0;
 
         if ($this->activeTripId) {
-            $trip = TripRequisition::with(['vehicle', 'driver'])->find($this->activeTripId);
-            $fuelLogs = FuelLog::where('trip_requisition_id', $this->activeTripId)->latest()->get();
+            $trip = TripRequest::with(['vehicle', 'driver'])->find($this->activeTripId);
+            $fuelLogs = FuelLog::where('trip_request_id', $this->activeTripId)->latest()->get();
             $totalFuelCost = (float) $fuelLogs->sum('total_cost');
         }
 

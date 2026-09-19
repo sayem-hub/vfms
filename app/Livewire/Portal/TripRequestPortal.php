@@ -4,20 +4,17 @@ namespace App\Livewire\Portal;
 
 use App\Models\Company;
 use App\Models\FactoryUnit;
-use App\Models\TripRequisition;
+use App\Models\TripRequest;
 use App\Models\User;
 use App\Services\Routing\RoutingManager;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
 #[Layout('layouts.app')]
-class TripRequisitionPortal extends Component
+class TripRequestPortal extends Component
 {
-    use WithFileUploads;
-
     #[Rule('required|exists:companies,id')]
     public ?int $company_id = null;
 
@@ -50,15 +47,9 @@ class TripRequisitionPortal extends Component
     #[Rule('nullable|date|after_or_equal:scheduled_start_time')]
     public ?string $scheduled_end_time = null;
 
-    #[Rule('nullable|string|max:60')]
-    public ?string $erp_requisition_no = null;
-
-    #[Rule('nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:10240')]
-    public $erp_requisition_copy;
-
     public bool $showSuccessModal = false;
 
-    public ?string $createdRequisitionNo = null;
+    public ?string $createdRequestNo = null;
 
     public function mount(): void
     {
@@ -71,8 +62,8 @@ class TripRequisitionPortal extends Component
     public function setPresetRoute(string $preset): void
     {
         $locations = [
-            'HO' => ['name' => 'Corporate Head Office, Gulshan-2, Dhaka', 'lat' => 23.7925, 'lng' => 90.4078],
-            'GZP' => ['name' => 'Mawna Unit 1 Plant, Gazipur', 'lat' => 24.1850, 'lng' => 90.4320],
+            'HO' => ['name' => 'Corporate Head Office, Baridhara DOHS, Dhaka', 'lat' => 23.8050, 'lng' => 90.4180],
+            'GZP' => ['name' => 'BK Bari Factory Plant, Gazipur', 'lat' => 24.0400, 'lng' => 90.3950],
             'NKG' => ['name' => 'Kachpur Unit 2 Mill, Narayanganj', 'lat' => 23.6850, 'lng' => 90.5120],
             'DEPZ' => ['name' => 'DEPZ Savar Factory Complex', 'lat' => 23.9310, 'lng' => 90.2690],
             'CTG' => ['name' => 'Chittagong Port Off-Dock Depot', 'lat' => 22.3167, 'lng' => 91.8000],
@@ -103,16 +94,11 @@ class TripRequisitionPortal extends Component
         }
     }
 
-    public function submitRequisition(RoutingManager $routingManager): void
+    public function submitRequest(RoutingManager $routingManager): void
     {
         $this->validate();
 
-        $filePath = null;
-        if ($this->erp_requisition_copy) {
-            $filePath = $this->erp_requisition_copy->store('erp/requisitions', 'public');
-        }
-
-        // Auto calculate expected distance via OSRM/Routing Manager
+        // Auto calculate expected distance via OSRM / Routing Manager
         $expectedDistance = null;
         if ($this->origin_latitude && $this->origin_longitude && $this->destination_latitude && $this->destination_longitude) {
             $route = $routingManager->calculateDistanceAndDuration(
@@ -126,13 +112,11 @@ class TripRequisitionPortal extends Component
             }
         }
 
-        // Get or default requester
         $requesterId = auth()->id() ?? User::first()?->id ?? 1;
+        $requestNo = 'TR-'.date('Ymd').'-'.strtoupper(substr(uniqid(), -4));
 
-        $requisitionNo = 'REQ-'.date('Ymd').'-'.strtoupper(substr(uniqid(), -4));
-
-        TripRequisition::create([
-            'requisition_no' => $requisitionNo,
+        TripRequest::create([
+            'request_no' => $requestNo,
             'company_id' => $this->company_id,
             'factory_unit_id' => $this->factory_unit_id,
             'requester_id' => $requesterId,
@@ -147,31 +131,29 @@ class TripRequisitionPortal extends Component
             'scheduled_start_time' => $this->scheduled_start_time,
             'scheduled_end_time' => $this->scheduled_end_time,
             'expected_distance_km' => $expectedDistance,
-            'erp_requisition_no' => $this->erp_requisition_no,
-            'erp_requisition_copy' => $filePath,
             'status' => 'SUBMITTED',
         ]);
 
-        $this->createdRequisitionNo = $requisitionNo;
+        $this->createdRequestNo = $requestNo;
         $this->showSuccessModal = true;
 
         // Reset form
-        $this->reset(['purpose', 'origin_name', 'destination_name', 'origin_latitude', 'origin_longitude', 'destination_latitude', 'destination_longitude', 'erp_requisition_no', 'erp_requisition_copy']);
+        $this->reset(['purpose', 'origin_name', 'destination_name', 'origin_latitude', 'origin_longitude', 'destination_latitude', 'destination_longitude']);
     }
 
     public function render(): View
     {
         $companies = Company::where('is_active', true)->get();
         $factoryUnits = FactoryUnit::where('company_id', $this->company_id)->where('is_active', true)->get();
-        $recentRequisitions = TripRequisition::with(['vehicle', 'driver', 'factoryUnit'])
+        $recentRequests = TripRequest::with(['vehicle', 'driver', 'factoryUnit'])
             ->latest()
             ->take(8)
             ->get();
 
-        return view('livewire.portal.trip-requisition-portal', [
+        return view('livewire.portal.trip-request-portal', [
             'companies' => $companies,
             'factoryUnits' => $factoryUnits,
-            'recentRequisitions' => $recentRequisitions,
+            'recentRequests' => $recentRequests,
         ]);
     }
 }
