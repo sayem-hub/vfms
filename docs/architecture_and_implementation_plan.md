@@ -137,11 +137,16 @@ erDiagram
     FACTORY_UNITS ||--o{ VEHICLES : parks
     COMPANIES ||--o{ VEHICLES : owns
     VEHICLES ||--o{ VEHICLE_COMPLIANCES : requires
-    VEHICLES ||--o{ TRIP_REQUISITIONS : fulfills
-    DRIVERS ||--o{ TRIP_REQUISITIONS : drives
-    TRIP_REQUISITIONS ||--o| TRIP_EXPENSE_SETTLEMENTS : settles
-    TRIP_REQUISITIONS ||--o{ FUEL_LOGS : consumes
-    TRIP_REQUISITIONS ||--o| EXPORT_SHIPMENT_DETAILS : carries
+    VEHICLES ||--o{ TRIP_REQUESTS : fulfills
+    DRIVERS ||--o{ TRIP_REQUESTS : drives
+    TRIP_REQUESTS ||--o| TRIP_EXPENSE_SETTLEMENTS : settles
+    TRIP_REQUESTS ||--o{ FUEL_LOGS : consumes
+    TRIP_REQUESTS ||--o| EXPORT_SHIPMENT_DETAILS : carries
+    VEHICLES ||--o{ FIXED_ROUTES : assigned_to
+    DRIVERS ||--o{ FIXED_ROUTES : operates
+    VEHICLES ||--o{ VEHICLE_GATE_LOGS : logs_movement
+    DRIVERS ||--o{ VEHICLE_GATE_LOGS : drives_gate
+    FIXED_ROUTES ||--o{ VEHICLE_GATE_LOGS : tracks_run
     VEHICLES ||--o{ MAINTENANCE_RECORDS : undergoes
     MAINTENANCE_RECORDS ||--o{ SCRAP_PARTS_SURRENDERS : returns
 ```
@@ -150,8 +155,8 @@ erDiagram
 * **`companies`**:
   * `id` (UUID/BigInt, PK)
   * `group_id` (Nullable, for conglomerate hierarchy)
-  * `name` (e.g., "Apex Knit Composite Ltd", "Echo Spinning Mills Ltd")
-  * `code` (e.g., "AKCL", "ESML")
+  * `name` (e.g., "N.A.Z. Bangladesh Ltd", "CA Knitwear Ltd")
+  * `code` (e.g., "NAZ", "CAKL")
   * `address`, `phone`, `email`
   * `is_active` (boolean, default true)
   * `timestamps`
@@ -159,8 +164,8 @@ erDiagram
 * **`factory_units`**:
   * `id` (PK)
   * `company_id` (FK -> `companies.id`)
-  * `name` (e.g., "Unit 1 - Dyeing & Knitting", "Unit 2 - Garments Sewing", "Unit 3 - Printing")
-  * `location_code` (e.g., "GZP-01", "NKG-02", "SAVAR-01", "HO-DHAKA")
+  * `name` (e.g., "Garments and Textile Complex (BK Bari)", "Unit 2 - Garments Sewing (Bhobanipur)")
+  * `location_code` (e.g., "BKBARI", "BHBNPR", "HO-DHAKA")
   * `latitude`, `longitude` (decimal 10,7)
   * `address`
   * `contact_person_name`, `contact_person_phone`
@@ -176,7 +181,7 @@ erDiagram
   * `company_id` (FK -> `companies.id`)
   * `factory_unit_id` (FK -> `factory_units.id`) — *Primary assigned factory unit*
   * `name` (string)
-  * `office_id_card` (string, unique, nullable) — *Employee / Punch ID in factory*
+  * `office_id_card` (string, unique, nullable) — *Employee / Punch ID in factory (e.g. EMP-DRV-1011)*
   * `phone` (string, indexed)
   * `nid_number` (string, National ID)
   * `photo` (string, nullable) — *Driver profile photo path*
@@ -195,14 +200,16 @@ erDiagram
   * `id` (PK)
   * `company_id` (FK -> `companies.id`)
   * `factory_unit_id` (FK -> `factory_units.id`) — *Base garage location*
-  * `registration_no` (string, unique, e.g., "DHAKA METRO-CHA-11-2345")
+  * `registration_no` (string, unique, e.g., "DHAKA METRO-GA-21-9988")
   * `vehicle_type` (enum: `SEDAN_CAR`, `MICROBUS`, `STAFF_BUS`, `COVERED_VAN_2T`, `COVERED_VAN_5T`, `COVERED_VAN_10T`, `AMBULANCE`, `MOTORCYCLE`, `PICKUP`)
+  * `usage_category` (enum: `GENERAL_POOL`, `DEDICATED_MANAGEMENT`, `STAFF_COMMUTE_BUS`, `FACTORY_LOGISTICS`, `EMERGENCY_AMBULANCE`, default `GENERAL_POOL`)
+  * `dedicated_to_official` (string, nullable, e.g., "Managing Director (Engr. Zahirul Islam)", "Director SCM (Mr. Ashraful Alam)")
   * `ownership_type` (enum: `COMPANY_OWNED`, `EXECUTIVE_CAR_SCHEME`, `RENTED_VENDOR`, `EMPLOYEE_PERSONAL`)
   * `fuel_type` (enum: `DIESEL`, `OCTANE`, `PETROL`, `CNG`, `LPG`, `DUAL_OCTANE_CNG`, `DUAL_OCTANE_LPG`)
   * `fuel_payer` (enum: `COMPANY`, `EMPLOYEE`, `VENDOR`, `MONTHLY_QUOTA`)
   * `maintenance_payer` (enum: `COMPANY`, `EMPLOYEE`, `VENDOR`, `SHARED_POLICY`)
   * `driver_payer` (enum: `COMPANY`, `EMPLOYEE`, `VENDOR`)
-  * `monthly_fuel_quota_liters` (decimal 8,2, nullable) — *For executive schemes*
+  * `monthly_fuel_quota_liters` (decimal 8,2, nullable) — *Monthly quota for executive cars (e.g. 250 L)*
   * `monthly_fixed_cost` (decimal 12,2, default 0) — *Rental fee or depreciation*
   * `rate_per_km` (decimal 8,2, nullable) — *For rented covered vans or personal KM claim*
   * `current_odometer` (integer, default 0)
@@ -212,6 +219,7 @@ erDiagram
   * `status` (enum: `AVAILABLE`, `ON_TRIP`, `UNDER_MAINTENANCE`, `ACCIDENT_GROUNDED`, `DECOMMISSIONED`)
   * `is_active` (boolean, default true)
   * `timestamps`
+
 
 * **`vehicle_compliances`** (BRTA Legal Radar):
   * `id` (PK)
@@ -260,7 +268,7 @@ erDiagram
 
 * **`export_shipment_details`** (Garments Export Covered Van Logistics):
   * `id` (PK)
-  * `trip_requisition_id` (FK -> `trip_requisitions.id`)
+  * `trip_request_id` (FK -> `trip_requests.id`)
   * `buyer_name` (string, e.g., "H&M", "Zara", "Marks & Spencer")
   * `export_lc_no` (string)
   * `commercial_invoice_no` (string)
@@ -280,11 +288,58 @@ erDiagram
 
 ---
 
+### 4.3.1. Fixed Commute Routes & Daily Digital Vehicle Logbook (`fixed_routes`, `vehicle_gate_logs`)
+
+For vehicles that operate on recurring fixed schedules without requiring daily booking requests:
+1. **Dedicated Management Vehicles**: High officials (Managing Director, Directors, GMs, Plant Heads) with assigned vehicles and drivers, operating under monthly fuel quotas without daily booking requests.
+2. **Fixed Route Staff Commute Buses**: Factory employee buses/minibuses running predefined routes on fixed work shifts (e.g. Joydebpur $\leftrightarrow$ BK Bari Complex, Uttara $\leftrightarrow$ BK Bari Complex).
+
+* **`fixed_routes`**:
+  * `id` (PK)
+  * `company_id` (FK -> `companies.id`)
+  * `factory_unit_id` (FK -> `factory_units.id`, nullable)
+  * `route_name` (string, e.g., "Joydebpur Chowrasta ➔ BK Bari Plant Staff Commute")
+  * `route_code` (string, nullable, e.g., "R-01")
+  * `origin_name` (string, e.g., "Joydebpur Chowrasta, Gazipur")
+  * `destination_name` (string, e.g., "NZ Group BK Bari Industrial Park")
+  * `standard_distance_km` (decimal 8,2, e.g. 38.5)
+  * `scheduled_departure_time` (string, e.g., "06:30 AM")
+  * `scheduled_return_time` (string, e.g., "06:30 PM")
+  * `shift_name` (string, default "General Shift")
+  * `assigned_vehicle_id` (FK -> `vehicles.id`, nullable)
+  * `assigned_driver_id` (FK -> `drivers.id`, nullable)
+  * `stoppages` (text, nullable — description of boarding stops)
+  * `is_active` (boolean, default true)
+  * `remarks` (text, nullable)
+  * `timestamps`
+
+* **`vehicle_gate_logs`** (The Core Operational Movement Logbook):
+  * `id` (PK)
+  * `vehicle_id` (FK -> `vehicles.id`)
+  * `driver_id` (FK -> `drivers.id`, nullable)
+  * `fixed_route_id` (FK -> `fixed_routes.id`, nullable)
+  * `log_type` (enum/string: `DEDICATED_MANAGEMENT_CAR`, `STAFF_COMMUTE_BUS`, `MAINTENANCE_TEST_RUN`, `OFFICIAL_DUTY`, `OTHER`)
+  * `log_date` (date, indexed)
+  * `gate_out_time` (datetime, nullable)
+  * `gate_in_time` (datetime, nullable)
+  * `out_odometer` (unsignedInteger, departure odometer)
+  * `in_odometer` (unsignedInteger, arrival odometer)
+  * `total_km` (decimal 8,2, computed: `in_odometer - out_odometer`)
+  * `official_name` (string, nullable — e.g. "Managing Director (Engr. Zahirul Islam)", "Staff General Shift")
+  * `destination` (string, nullable)
+  * `purpose` (string, nullable)
+  * `status` (enum: `OUT`, `COMPLETED`, `CANCELLED`)
+  * `security_guard_id` (FK -> `users.id`, nullable)
+  * `remarks` (text, nullable)
+  * `timestamps`
+
+---
+
 ### 4.4. Fuel Management & Petty Cash Settlement (The Cash Advance Model)
 
 * **`fuel_logs`**:
   * `id` (PK)
-  * `trip_requisition_id` (FK -> `trip_requisitions.id`, nullable)
+  * `trip_request_id` (FK -> `trip_requests.id`, nullable — *Nullable for monthly quota cars & buses*)
   * `vehicle_id` (FK -> `vehicles.id`)
   * `driver_id` (FK -> `drivers.id`)
   * `fuel_type` (enum: `DIESEL`, `OCTANE`, `PETROL`, `CNG`, `LPG`)
@@ -306,8 +361,9 @@ erDiagram
 
 * **`trip_expense_settlements`** (Petty Cash Advance vs Actual Expense):
   * `id` (PK)
-  * `trip_requisition_id` (FK -> `trip_requisitions.id`, unique)
+  * `trip_request_id` (FK -> `trip_requests.id`, unique)
   * `driver_id` (FK -> `drivers.id`)
+
   * `advance_cash_received` (decimal 10,2, default 0) — *Disbursed by Cashier before trip*
   * `advance_received_from_user_id` (FK -> `users.id`, Cashier)
   * `advance_disbursed_at` (datetime)
@@ -400,30 +456,42 @@ erDiagram
 ```
 ┌─────────────────┬──────────────────────────────────────────────────────────────────────────┐
 │ Step 1          │ Database Schema & Eloquent Models                                        │
-│ (In Progress)   │ • Create migrations with all finalized columns                           │
-│                 │ • Define relationships, enums, casts, and model observers                │
+│ (COMPLETED)     │ • Multi-company, unit, vehicle, driver & compliance migrations           │
+│                 │ • Trip requests, shipment details, fuel logs & expense settlements       │
 ├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
-│ Step 2          │ Modular Routing Engine                                                   │
-│                 │ • RoutingServiceInterface, OsrmRoutingService, GoogleMapsRoutingService   │
-│                 │ • Distance Variance Audit & Anomaly Detection Logic                      │
+│ Step 2          │ Modular Routing Engine & Distance Audit                                  │
+│ (COMPLETED)     │ • RoutingServiceInterface, OsrmRoutingService, GoogleMapsRoutingService   │
+│                 │ • Automated Distance Variance Audit (flags >15% variance)                │
 ├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
 │ Step 3          │ Petty Cash, Fuel Refills & Expense Settlement Core                       │
-│                 │ • Fuel efficiency calculations (KM/L) & siphon alert triggers            │
+│ (COMPLETED)     │ • Fuel efficiency calculations (KM/L) & siphon alert triggers (>20% drop)│
 │                 │ • Cash advance disbursement and settlement balance calculator            │
 ├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
-│ Step 4          │ Custom ERP Cross-Reference Bridges                                       │
-│                 │ • Form controls and file attachments for erp_gatepass_no & erp_req_no    │
-│                 │ • Extensible sync command/interface for automated ERP data exchange     │
+│ Step 4          │ Digital Maintenance Pre-Requisition & ERP Tagging                        │
+│ (COMPLETED)     │ • Eliminate handwritten memos: Digital Pre-Requisition & Admin Approval  │
+│                 │ • Store ERP Requisition tagging (SRQ Service / RQSN Parts) & Vendor GP   │
+│                 │ • Old scrap parts surrender to Central Store before payment release      │
 ├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
-│ Step 5          │ Filament v5 Back-Office Resources & Dashboards                           │
-│                 │ • Vehicle Registry, Driver Management, Trip Auditing, BRTA Radar         │
-│                 │ • Cost Per KM (CPK) & Total Cost of Ownership (TCO) Executive Widgets    │
+│ Step 5          │ Fixed & Dedicated Movement System & Digital Daily Logbook                │
+│ (COMPLETED)     │ • Pre-assigned Management Cars (MD/Directors) & Staff Commute Buses      │
+│                 │ • Fixed routes (origins, destinations, standard KM, shifts, schedules)   │
+│                 │ • Digital Daily Vehicle Logbook (vehicle_gate_logs) & Monthly Fuel Quotas│
 ├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
-│ Step 6          │ NativePHP Mobile v4 Integration                                          │
-│                 │ • Offline SQLite database schema & sync endpoints                        │
+│ Step 6          │ Filament v5 Back-Office Resources & Dashboards                           │
+│ (COMPLETED)     │ • Vehicle Registry, Driver Management, Fixed Routes, Daily Logbook       │
+│                 │ • Trip Requests, Fuel Logs, Expense Settlements, Maintenance & Scrap     │
+├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ Step 7          │ Livewire v4 Front-Office & Field Portals                                 │
+│ (COMPLETED)     │ • Trip Request Portal with preset composite mill routes                  │
+│                 │ • Dual-Tab Gate Pass Terminal (On-Demand Requests vs Fixed Vehicles)     │
+│                 │ • Driver Field Portal with Real-Time Monthly Fuel Quota Tracker Widget   │
+├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ Step 8          │ NativePHP Mobile v4 Integration                                          │
+│ (PLANNED)       │ • Offline SQLite database schema & sync endpoints                        │
 │                 │ • Driver Trip Logging, Live Camera capture & GPS location pings          │
 └─────────────────┴──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 *Blueprint finalized and preserved at: `C:\www\vfms\docs\architecture_and_implementation_plan.md`*
+

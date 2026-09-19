@@ -4,7 +4,7 @@
 **Conglomerate Context:** Multi-Unit Knit Composite & Textile Group in Bangladesh  
 **Stack:** Laravel 13.x | Livewire 4.x | Filament 5.x | NativePHP Mobile v4 | SQLite/MySQL/PostgreSQL  
 **Repository:** `https://github.com/sayem-hub/vfms.git`  
-**Last Updated:** September 17, 2026  
+**Last Updated:** September 19, 2026  
 
 ---
 
@@ -134,9 +134,30 @@
   - [x] **PO Tracking Excluded**: Head Office Baridhara DOHS SCM work is deliberately kept outside VFMS per instructions
   - [x] **Trip Booking Domain Refactoring**: Renamed all trip booking entities from "Requisition" to "Request" (`TripRequest`, `trip_requests`, `request_no`), and purged misplaced ERP requisition/gatepass fields from trip booking
 
+- [x] **Fixed & Dedicated Movement (IN-OUT) System, Digital Daily Logbook & Fuel Quota Tracker**
+  - [x] **Database Schema & Migrations**: `fixed_routes` (routes, stops, schedules, assigned vehicle/driver), `vehicle_gate_logs` (daily movement logbook), and `vehicles` table updates (`usage_category`, `dedicated_to_official`)
+  - [x] **Eloquent Domain Models**: `FixedRoute` and `VehicleGateLog` models with relations; `Vehicle` quota helper methods (`monthlyFuelConsumedLiters`, `monthlyFuelQuotaRemaining`, `monthlyFuelQuotaUsagePercent`, `activeGateLog`)
+  - [x] **Dual-Tab Gate Pass Terminal** ([`GatePassTerminal.php`](../app/Livewire/Portal/GatePassTerminal.php) & view):
+    - [x] Tab 1: On-Demand Trip Requests with automated distance anomaly audit
+    - [x] Tab 2: Fixed & Dedicated Vehicles express punch with real-time factory presence status (🟢 IN / 🟡 OUT)
+    - [x] One-click Gate Out (records departure odometer, driver, route/official, destination, purpose; sets vehicle `ON_TRIP`)
+    - [x] One-click Gate In (records return odometer, automatically calculates total KM run, sets vehicle `AVAILABLE` and updates odometer)
+    - [x] Today's live fixed movement register
+  - [x] **Driver Field Portal Quota Integration** ([`DriverPortal.php`](../app/Livewire/Portal/DriverPortal.php) & view):
+    - [x] Real-time Monthly Fuel Quota Tracker widget (Quota vs Consumed vs Remaining, color-coded visual progress bar, quota exceeded alert)
+    - [x] Direct fuel refill logging for dedicated & fixed vehicles without requiring a trip request
+  - [x] **Filament v5 Back-Office Resources**:
+    - [x] `FixedRouteResource` (Commute bus routes, schedules, stops, assigned vehicle & driver)
+    - [x] `VehicleGateLogResource` (Daily Digital Vehicle Logbook / দৈনিক ডিজিটাল লগবই)
+    - [x] `VehicleResource` enhanced with `usage_category` and `dedicated_to_official`
+  - [x] **Conglomerate Seeder**: Seeded MD Camry (`GA-21-9988`), Director HiAce (`CHA-53-4412`), Staff Bus (`BA-11-2345`), Joydebpur & Uttara routes, today's gate logs, and monthly quota fuel refills in [`DatabaseSeeder.php`](../database/seeders/DatabaseSeeder.php)
+  - [x] **Bilingual Localization**: Added Bengali & English dictionary keys for fixed routes, daily logbook, gate punches, and fuel quotas in [`lang/bn/vfms.php`](../lang/bn/vfms.php) and [`lang/en/vfms.php`](../lang/en/vfms.php)
+
 - [x] **Automated Test Suite for Portals & Operations**
-  - [x] 19 Pest tests passing with 75 assertions (`php artisan test`)
+  - [x] 24 Pest tests passing with 106 assertions (`php artisan test`)
+  - [x] Dedicated test suite [`tests/Feature/FixedMovementAndLogbookTest.php`](../tests/Feature/FixedMovementAndLogbookTest.php)
   - [x] Laravel Pint code styling & PSR-12 formatting applied cleanly (`pint --test` passed)
+
 
 ---
 
