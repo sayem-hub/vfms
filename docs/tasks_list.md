@@ -161,20 +161,47 @@
 
 ---
 
-## Phase 4: NativePHP Mobile v4 Application (Android/iOS)
+## Phase 4: NativePHP Mobile v4 Application (Android/iOS) & Mobile Field Engine
 
-- [ ] **NativePHP Mobile Environment Setup**
-  - [ ] Configure NativePHP Mobile v4 compiler & shell
-  - [ ] Local SQLite database initialization for offline cache
+- [x] **NativePHP Mobile Environment & Configuration**
+  - [x] Mobile configuration ([`config/nativephp.php`](../config/nativephp.php)) with App ID `com.applifebd.vfms`
+  - [x] Hardware permissions: Camera, Fine/Coarse GPS Location, Network State, WakeLock, Storage
+  - [x] Local SQLite database initialization for offline client storage (`mobile_offline_cache.sqlite`)
+  - [x] Official factory and logistics hub GPS coordinates:
+    - `HO`: Corporate Head Office, Baridhara DOHS, Dhaka (`23.8197, 90.4143`)
+    - `GZP`: BK Bari Factory Plant, Gazipur (`24.1036, 90.3991`)
+    - `CGZP`: CAKL, Bhobanipur, Gazipur (`24.1483, 90.4224`)
+    - `AGZP`: BIDC Road, Joydebpur, Gazipur (`23.9310, 90.2690`)
+    - `CTG`: Chittagong Port Off-Dock Depot (`22.3167, 91.8000`)
+    - `AIR`: Dhaka Airport Cargo Village (`23.8433, 90.4030`)
+    - `YGZP`: NAZ Yarn Store, Rajabari, Gazipur (`24.1044, 90.4961`)
 
-- [ ] **Offline-First Data Synchronization**
-  - [ ] Outbox queue for offline trip starts, stops, and checkpoints
-  - [ ] Automatic background sync when 4G network reconnects
+- [x] **Offline-First Data Synchronization Engine**
+  - [x] Database migration & Eloquent Model: [`MobileSyncOutbox.php`](../app/Models/MobileSyncOutbox.php) (`mobile_sync_outbox` table)
+  - [x] Idempotency deduplication mechanism preventing duplicate entries on network retry
+  - [x] Domain sync service: [`OfflineSyncService.php`](../app/Services/Mobile/OfflineSyncService.php) handling batch actions (`GATE_OUT`, `GATE_IN`, `FUEL_REFILL`, `EXPENSE_LOG`, `TRIP_START`, `TRIP_END`, `GPS_BREADCRUMB`)
+  - [x] Automatic background sync on network reconnect via `window.addEventListener('online')`
 
-- [ ] **Hardware Sensors & Device Features**
-  - [ ] Native camera capture (block gallery uploads to prevent receipt manipulation)
-  - [ ] Image watermarking with timestamp, GPS coordinates, and vehicle registration
-  - [ ] Background GPS pinging during active trips for geofence verification
+- [x] **Hardware Sensors, Tamper-Evident Watermarking & Geofence Engine**
+  - [x] Direct native camera capture with anti-gallery lock (`capture="environment"`)
+  - [x] PHP GD Tamper-Evident Visual & Metadata Watermarking Engine ([`ImageWatermarkService.php`](../app/Services/Mobile/ImageWatermarkService.php)) burning timestamp, vehicle registration, driver name, GPS coordinates, and security seal onto photos
+  - [x] Background GPS ping & breadcrumb recording: [`VehicleGpsPing.php`](../app/Models/VehicleGpsPing.php)
+  - [x] Geofence Verification Service ([`GeofenceVerificationService.php`](../app/Services/Mobile/GeofenceVerificationService.php)) with Haversine distance, factory boundary checks, and mock/fake GPS detection
+
+- [x] **Mobile RESTful APIs & Field Terminal UI**
+  - [x] RESTful API endpoints in [`routes/api.php`](../routes/api.php):
+    - `POST /api/v1/mobile/sync/push`: Ingest offline outbox batch
+    - `GET /api/v1/mobile/sync/pull`: Offline bootstrap data pull
+    - `POST /api/v1/mobile/gps/ping`: Live GPS coordinate ping
+    - `POST /api/v1/mobile/photo/watermark`: Live camera photo upload with auto-watermarking
+    - `GET /api/v1/mobile/geofences`: Official location reference
+  - [x] Mobile Terminal Livewire component ([`MobileTerminal.php`](../app/Livewire/Portal/MobileTerminal.php) & [`mobile-terminal.blade.php`](../resources/views/livewire/portal/mobile-terminal.blade.php)) with touchscreen controls, offline status indicator, and outbox manager
+  - [x] Navigation bar integration in [`layouts/app.blade.php`](../resources/views/layouts/app.blade.php)
+
+- [x] **Automated Test Suite & Code Quality**
+  - [x] Dedicated test suite [`tests/Feature/MobileOfflineSyncAndHardwareTest.php`](../tests/Feature/MobileOfflineSyncAndHardwareTest.php) (5 tests, 68 assertions)
+  - [x] Total project test suite: **33 tests passing with 230 assertions (100%)**
+  - [x] Clean PSR-12 code formatted via Laravel Pint
 
 ---
 

@@ -80,4 +80,9 @@ class TripRequest extends Model
     {
         return $this->hasOne(TripExpenseSettlement::class, 'trip_request_id');
     }
+
+    public function gpsPings(): HasMany
+    {
+        return $this->hasMany(VehicleGpsPing::class);
+    }
 }

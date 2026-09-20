@@ -79,6 +79,11 @@ class Vehicle extends Model
         return $this->hasMany(CostAllocationItem::class);
     }
 
+    public function gpsPings(): HasMany
+    {
+        return $this->hasMany(VehicleGpsPing::class);
+    }
+
     public function isDedicated(): bool
     {
         return $this->usage_category === 'DEDICATED_MANAGEMENT' || ! empty($this->dedicated_to_official);

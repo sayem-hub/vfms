@@ -162,4 +162,16 @@ return [
     'allocation_journal' => 'খরচ বণ্টন জার্নাল',
     'journal_reference_no' => 'জার্নাল রেফারেন্স নম্বর',
     'chargeable_total' => 'সর্বমোট চার্জযোগ্য ব্যয়',
+
+    // Phase 4: NativePHP Mobile & Offline Sync Engine
+    'mobile_terminal' => 'মোবাইল টার্মিনাল',
+    'offline_mode' => 'অফলাইন মোড (লোকাল ক্যাশ)',
+    'online_mode' => 'অনলাইন মোড',
+    'offline_outbox' => 'অফলাইন আউটবক্স কিউ',
+    'sync_outbox' => 'আউটবক্স সিঙ্ক করুন',
+    'tamper_evident_camera' => 'লাইভ ক্যামেরা প্রুফ (অ্যান্টি-ট্যাম্পার)',
+    'watermarked_proof' => 'স্বয়ংক্রিয় ওয়াটারমার্কযুক্ত প্রুফ',
+    'geofence_status' => 'কারখানা জিওফেন্স স্ট্যাটাস',
+    'gps_ping' => 'লাইভ জিপিএস লোকেশন পিং',
+    'mock_location_detected' => '⚠️ ভূয়া/মক জিপিএস শনাক্ত হয়েছে',
 ];

@@ -162,4 +162,16 @@ return [
     'allocation_journal' => 'Cost Allocation Journal',
     'journal_reference_no' => 'Journal Reference No',
     'chargeable_total' => 'Total Chargeable Cost',
+
+    // Phase 4: NativePHP Mobile & Offline Sync Engine
+    'mobile_terminal' => 'Mobile Terminal',
+    'offline_mode' => 'Offline Mode (Local Cache)',
+    'online_mode' => 'Online Mode',
+    'offline_outbox' => 'Offline Outbox Queue',
+    'sync_outbox' => 'Sync Outbox Now',
+    'tamper_evident_camera' => 'Live Camera Proof (Anti-Tamper)',
+    'watermarked_proof' => 'Watermarked Proof',
+    'geofence_status' => 'Factory Geofence Status',
+    'gps_ping' => 'Live GPS Location Ping',
+    'mock_location_detected' => '⚠️ Mock/Fake GPS Detected',
 ];

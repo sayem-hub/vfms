@@ -42,13 +42,25 @@
                             class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
                         📍 বারিধারা HO ➔ বিকে বাড়ি কারখানা
                     </button>
-                    <button type="button" wire:click="setPresetRoute('GZP_TO_CTG')"
+                    <button type="button" wire:click="setPresetRoute('GZP_TO_CGZP')"
                             class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
-                        🚢 বিকে বাড়ি গাজিপুর ➔ চট্টগ্রাম অফ-ডক
+                        🚢 বিকে বাড়ি কারখানা ➔ ভবানীপুর
                     </button>
-                    <button type="button" wire:click="setPresetRoute('HO_TO_NKG')"
+                    <button type="button" wire:click="setPresetRoute('HO_TO_CGZP')"
                             class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
-                        🏭 বারিধারা HO ➔ কাঁচপুর স্পিনিং
+                        🏭 বারিধারা HO ➔ ভবানীপুর
+                    </button>
+                    <button type="button" wire:click="setPresetRoute('HO_TO_AGZP')"
+                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
+                        🏭 বারিধারা HO ➔ বিআইডিসি রোড
+                    </button>
+                    <button type="button" wire:click="setPresetRoute('GZP_TO_HO')"
+                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
+                        🚢 বিকে বাড়ি কারখানা ➔ বারিধারা HO
+                    </button>
+                    <button type="button" wire:click="setPresetRoute('CGZP_TO_HO')"
+                            class="text-xs px-3 py-1.5 bg-white border border-slate-300 hover:border-orange-500 hover:text-orange-700 rounded-lg font-medium shadow-2xs transition">
+                        🚢 ভবানীপুর ➔ বারিধারা HO
                     </button>
                 </div>
             </div>
@@ -103,7 +115,7 @@
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
                             {{ app()->getLocale() === 'bn' ? 'যাত্রার সময়' : 'Departure Time' }} <span class="text-red-500">*</span>
                         </label>
-                        <input type="datetime-local" wire:model="scheduled_start_time" 
+                        <input type="datetime-local" wire:model="scheduled_start_time"
                                class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white" />
                         @error('scheduled_start_time') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                     </div>
@@ -115,7 +127,7 @@
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
                             {{ app()->getLocale() === 'bn' ? 'প্রস্থানস্থল (Origin)' : 'Origin Location' }} <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" wire:model="origin_name" placeholder="e.g. BK Bari, NAZ Bangladesh Ltd" 
+                        <input type="text" wire:model="origin_name" placeholder="e.g. BK Bari, NAZ Bangladesh Ltd"
                                class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white" />
                         @error('origin_name') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                     </div>
@@ -124,7 +136,7 @@
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
                             {{ app()->getLocale() === 'bn' ? 'গন্তব্যস্থল (Destination)' : 'Destination Location' }} <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" wire:model="destination_name" placeholder="e.g. Corporate Head Office, Baridhara DOHS" 
+                        <input type="text" wire:model="destination_name" placeholder="e.g. Corporate Head Office, Baridhara DOHS"
                                class="w-full text-sm rounded-lg border-slate-300 focus:border-orange-500 focus:ring-orange-500 p-2.5 border bg-white" />
                         @error('destination_name') <span class="text-xs text-red-600 block mt-1">{{ $message }}</span> @enderror
                     </div>

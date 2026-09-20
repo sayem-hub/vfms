@@ -2,6 +2,7 @@
 
 use App\Livewire\Portal\DriverPortal;
 use App\Livewire\Portal\GatePassTerminal;
+use App\Livewire\Portal\MobileTerminal;
 use App\Livewire\Portal\TripRequestPortal;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
     })->name('requisitions');
     Route::get('/gate-pass', GatePassTerminal::class)->name('gate-pass');
     Route::get('/driver', DriverPortal::class)->name('driver');
+    Route::get('/mobile', MobileTerminal::class)->name('mobile');
 });
 
 // Dynamic Language Switcher Route

@@ -68,6 +68,10 @@
                                class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.driver') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                                 🛞 {{ app()->getLocale() === 'bn' ? 'ড্রাইভার পোর্টাল' : 'Driver Portal' }}
                             </a>
+                            <a href="{{ route('portal.mobile') }}" 
+                               class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.mobile') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                📱 {{ app()->getLocale() === 'bn' ? 'মোবাইল টার্মিনাল' : 'Mobile App' }}
+                            </a>
                         </nav>
                     </div>
 

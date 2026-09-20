@@ -62,12 +62,13 @@ class TripRequestPortal extends Component
     public function setPresetRoute(string $preset): void
     {
         $locations = [
-            'HO' => ['name' => 'Corporate Head Office, Baridhara DOHS, Dhaka', 'lat' => 23.8050, 'lng' => 90.4180],
-            'GZP' => ['name' => 'BK Bari Factory Plant, Gazipur', 'lat' => 24.0400, 'lng' => 90.3950],
-            'NKG' => ['name' => 'Kachpur Unit 2 Mill, Narayanganj', 'lat' => 23.6850, 'lng' => 90.5120],
-            'DEPZ' => ['name' => 'DEPZ Savar Factory Complex', 'lat' => 23.9310, 'lng' => 90.2690],
+            'HO' => ['name' => 'Corporate Head Office, Baridhara DOHS, Dhaka', 'lat' => 23.8197, 'lng' => 90.4143],
+            'GZP' => ['name' => 'BK Bari Factory Plant, Gazipur', 'lat' => 24.1036, 'lng' => 90.3991],
+            'CGZP' => ['name' => 'CAKL, Bhobanipur, Gazipur', 'lat' => 24.1483, 'lng' => 90.4224],
+            'AGZP' => ['name' => 'BIDC Road, Joydebpur, Gazipur', 'lat' => 23.9310, 'lng' => 90.2690],
             'CTG' => ['name' => 'Chittagong Port Off-Dock Depot', 'lat' => 22.3167, 'lng' => 91.8000],
             'AIR' => ['name' => 'Dhaka Airport Cargo Village', 'lat' => 23.8433, 'lng' => 90.4030],
+            'YGZP' => ['name' => 'NAZ Yarn Store, Rajabari, Gazipur', 'lat' => 24.1044, 'lng' => 90.4961],
         ];
 
         if ($preset === 'HO_TO_GZP') {
@@ -77,20 +78,48 @@ class TripRequestPortal extends Component
             $this->destination_name = $locations['GZP']['name'];
             $this->destination_latitude = $locations['GZP']['lat'];
             $this->destination_longitude = $locations['GZP']['lng'];
-        } elseif ($preset === 'GZP_TO_CTG') {
+        } elseif ($preset === 'GZP_TO_CGZP') {
             $this->origin_name = $locations['GZP']['name'];
             $this->origin_latitude = $locations['GZP']['lat'];
             $this->origin_longitude = $locations['GZP']['lng'];
-            $this->destination_name = $locations['CTG']['name'];
-            $this->destination_latitude = $locations['CTG']['lat'];
-            $this->destination_longitude = $locations['CTG']['lng'];
-        } elseif ($preset === 'HO_TO_NKG') {
+            $this->destination_name = $locations['CGZP']['name'];
+            $this->destination_latitude = $locations['CGZP']['lat'];
+            $this->destination_longitude = $locations['CGZP']['lng'];
+        } elseif ($preset === 'HO_TO_CGZP') {
             $this->origin_name = $locations['HO']['name'];
             $this->origin_latitude = $locations['HO']['lat'];
             $this->origin_longitude = $locations['HO']['lng'];
-            $this->destination_name = $locations['NKG']['name'];
-            $this->destination_latitude = $locations['NKG']['lat'];
-            $this->destination_longitude = $locations['NKG']['lng'];
+            $this->destination_name = $locations['CGZP']['name'];
+            $this->destination_latitude = $locations['CGZP']['lat'];
+            $this->destination_longitude = $locations['CGZP']['lng'];
+        } elseif ($preset === 'HO_TO_AGZP') {
+            $this->origin_name = $locations['HO']['name'];
+            $this->origin_latitude = $locations['HO']['lat'];
+            $this->origin_longitude = $locations['HO']['lng'];
+            $this->destination_name = $locations['AGZP']['name'];
+            $this->destination_latitude = $locations['AGZP']['lat'];
+            $this->destination_longitude = $locations['AGZP']['lng'];
+        } elseif ($preset === 'GZP_TO_HO') {
+            $this->origin_name = $locations['GZP']['name'];
+            $this->origin_latitude = $locations['GZP']['lat'];
+            $this->origin_longitude = $locations['GZP']['lng'];
+            $this->destination_name = $locations['HO']['name'];
+            $this->destination_latitude = $locations['HO']['lat'];
+            $this->destination_longitude = $locations['HO']['lng'];
+        } elseif ($preset === 'CTG_TO_HO') {
+            $this->origin_name = $locations['CTG']['name'];
+            $this->origin_latitude = $locations['CTG']['lat'];
+            $this->origin_longitude = $locations['CTG']['lng'];
+            $this->destination_name = $locations['HO']['name'];
+            $this->destination_latitude = $locations['HO']['lat'];
+            $this->destination_longitude = $locations['HO']['lng'];
+        } elseif ($preset === 'CGZP_TO_HO') {
+            $this->origin_name = $locations['CGZP']['name'];
+            $this->origin_latitude = $locations['CGZP']['lat'];
+            $this->origin_longitude = $locations['CGZP']['lng'];
+            $this->destination_name = $locations['HO']['name'];
+            $this->destination_latitude = $locations['HO']['lat'];
+            $this->destination_longitude = $locations['HO']['lng'];
         }
     }
 

@@ -66,4 +66,14 @@ class Driver extends Model
     {
         return $this->hasMany(VehicleGateLog::class);
     }
+
+    public function gpsPings(): HasMany
+    {
+        return $this->hasMany(VehicleGpsPing::class);
+    }
+
+    public function outboxMessages(): HasMany
+    {
+        return $this->hasMany(MobileSyncOutbox::class);
+    }
 }
