@@ -37,6 +37,13 @@ yarn-error.log
 /.mcp.json
 /AGENTS.md
 /CLAUDE.md
-/boost.json
 /opencode.json
 /opencode.jsonc
+
+# Android Build Artifacts & APKs
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.apk
+
