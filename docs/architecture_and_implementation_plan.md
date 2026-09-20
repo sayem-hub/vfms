@@ -451,6 +451,43 @@ For vehicles that operate on recurring fixed schedules without requiring daily b
 
 ---
 
+### 4.6. Financial Management, CPK, TCO & Inter-Company Cost Allocation
+
+To enable executive decision-making, CPK benchmarking, and monthly central fleet cost cross-charging across sister concerns:
+
+* **`cost_allocations`**:
+  * `id` (PK)
+  * `company_id` (FK -> `companies.id`, sister concern e.g. NAZ, CAKL)
+  * `factory_unit_id` (FK -> `factory_units.id`, nullable)
+  * `allocation_period` (string, format `YYYY-MM`)
+  * `journal_reference_no` (string, unique, e.g. `JRN-202609-NAZ-001`)
+  * `total_trips_count` (unsignedInteger)
+  * `total_km_run` (decimal 10,2)
+  * `total_fuel_cost` (decimal 12,2)
+  * `total_maintenance_cost` (decimal 12,2)
+  * `total_driver_cost` (decimal 12,2)
+  * `total_toll_and_operating_cost` (decimal 12,2)
+  * `grand_total_allocated` (decimal 12,2)
+  * `status` (enum: `DRAFT`, `FINALIZED`, `POSTED_TO_ERP`)
+  * `approved_by` (FK -> `users.id`, nullable)
+  * `approved_at` (datetime, nullable)
+  * `notes` (text, nullable)
+  * `timestamps`
+
+* **`cost_allocation_items`**:
+  * `id` (PK)
+  * `cost_allocation_id` (FK -> `cost_allocations.id`, cascade delete)
+  * `vehicle_id` (FK -> `vehicles.id`)
+  * `trips_count` (unsignedInteger)
+  * `km_run` (decimal 10,2)
+  * `fuel_cost` (decimal 12,2)
+  * `maintenance_cost` (decimal 12,2)
+  * `operating_cost` (decimal 12,2)
+  * `total_allocated_cost` (decimal 12,2)
+  * `timestamps`
+
+---
+
 ## 5. Implementation Plan & Work Breakdown
 
 ```
@@ -486,7 +523,15 @@ For vehicles that operate on recurring fixed schedules without requiring daily b
 │                 │ • Dual-Tab Gate Pass Terminal (On-Demand Requests vs Fixed Vehicles)     │
 │                 │ • Driver Field Portal with Real-Time Monthly Fuel Quota Tracker Widget   │
 ├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
-│ Step 8          │ NativePHP Mobile v4 Integration                                          │
+│ Step 8          │ Financial Management, CPK Engine, TCO & Inter-Company Allocation         │
+│ (COMPLETED)     │ • Cost Per KM (CPK) calculation formula & category benchmarks             │
+│                 │ • Vehicle Lifetime Total Cost of Ownership (TCO) Ledger & Advisor        │
+│                 │ • Repair vs Replace (মেরামত বনাম নতুন গাড়ি ক্রয়) Advisory Engine         │
+│                 │ • Inter-Company Cost Allocation Engine & monthly journal generator       │
+│                 │ • Executive KPI Stat Cards, Cost Breakdown Doughnut & CPK Bar Chart      │
+│                 │ • Management Fuel Quota tracking table widget                            │
+├─────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ Step 9          │ NativePHP Mobile v4 Integration                                          │
 │ (PLANNED)       │ • Offline SQLite database schema & sync endpoints                        │
 │                 │ • Driver Trip Logging, Live Camera capture & GPS location pings          │
 └─────────────────┴──────────────────────────────────────────────────────────────────────────┘
@@ -494,4 +539,5 @@ For vehicles that operate on recurring fixed schedules without requiring daily b
 
 ---
 *Blueprint finalized and preserved at: `C:\www\vfms\docs\architecture_and_implementation_plan.md`*
+
 

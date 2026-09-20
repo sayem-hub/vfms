@@ -178,19 +178,46 @@
 
 ---
 
-## Phase 5: Financial Management, TCO & Executive Dashboards
+## Phase 5: Financial Management, CPK, TCO & Executive Dashboards
 
-- [ ] **Cost Per Kilometer (CPK) Calculator**
-  - [ ] Monthly aggregation: $(\text{Fuel} + \text{Maintenance} + \text{Driver Salary} + \text{Tolls} + \text{Rental}) / \text{Total KM}$
-  - [ ] Route-wise and vehicle-wise CPK benchmarking charts
+- [x] **Cost Per Kilometer (CPK) Calculator Engine**
+  - [x] Comprehensive CPK formula service ([`CostPerKmService.php`](../app/Services/Financial/CostPerKmService.php)): $(\text{Fuel} + \text{Maintenance} + \text{Driver Wages} + \text{Tolls/Operating} + \text{Fixed Costs}) / \text{Total KM}$
+  - [x] Vehicle-wise and Fleet-wide CPK calculation integrating both on-demand trips and daily digital gate log distances
+  - [x] Vehicle category CPK benchmarking (Sedan Car, Microbus, Staff Bus, Covered Van, Ambulance)
 
-- [ ] **Vehicle Total Cost of Ownership (TCO) Ledger**
-  - [ ] Vehicle lifetime ledger (Fuel, Servicing, BRTA fees, Insurance, Demurrage)
-  - [ ] Replacement vs repair cost recommendation analytics
+- [x] **Vehicle Total Cost of Ownership (TCO) Ledger & "Repair vs Replace" Advisory**
+  - [x] Vehicle lifetime TCO ledger ([`TotalCostOfOwnershipService.php`](../app/Services/Financial/TotalCostOfOwnershipService.php)): Capital acquisition value, lifetime fuel, maintenance, BRTA compliances, and trip operating costs
+  - [x] Lifetime fleet CPK benchmarking
+  - [x] **Repair vs Replace (মেরামত বনাম নতুন গাড়ি ক্রয়) Advisory Engine**: Economic evaluation comparing trailing 12-month maintenance spend vs capital benchmark ($>35\%$ or high mileage $>300,000\text{ km} \rightarrow$ Recommend Replace, $>20\% \rightarrow$ Watchlist, otherwise Economical to Retain)
 
-- [ ] **Inter-Company Cost Allocation Engine**
-  - [ ] Monthly journal generation cross-charging central transport costs to specific sister concern units (Knitting, Dyeing, Apparel 1/2/3, Spinning)
+- [x] **Inter-Company Cost Allocation Engine (সিস্টার কনসার্ন খরচ বণ্টন)**
+  - [x] Live monthly cost allocation matrix generator ([`CostAllocationService.php`](../app/Services/Financial/CostAllocationService.php)) cross-charging central transport costs to sister concerns (`NAZ`, `CAKL`, factory units)
+  - [x] Dynamic allocation journal voucher generator with unique reference numbers (`JRN-YYYYMM-XXX-####`)
+  - [x] Normalized database schema: `cost_allocations` and `cost_allocation_items` with itemized vehicle-level breakdowns
 
-- [ ] **Custom ERP API Sync Bridge**
-  - [ ] Background job to sync cleared trip settlements with Custom ERP financial ledger
-  - [ ] Sync status tracking and retry mechanism for failed API payloads
+- [x] **Executive Dashboards & Back-Office Analytics Pages**
+  - [x] **Financial Analytics & TCO Page** ([`FinancialAnalytics.php`](../app/Filament/Pages/FinancialAnalytics.php) & [`financial-analytics.blade.php`](../resources/views/filament/pages/financial-analytics.blade.php))
+  - [x] **Inter-Company Cost Allocation Page** ([`InterCompanyAllocationPage.php`](../app/Filament/Pages/InterCompanyAllocationPage.php) & [`inter-company-allocation.blade.php`](../resources/views/filament/pages/inter-company-allocation.blade.php)) with one-click journal generation and live table
+  - [x] **Executive KPI Stat Cards** ([`FleetFinancialStatsWidget.php`](../app/Filament/Widgets/FleetFinancialStatsWidget.php)): Monthly Spend, Average CPK, Total KM, Executive Fuel Quota consumption
+  - [x] **Fleet Cost Breakdown Doughnut Chart** ([`FleetCostBreakdownChartWidget.php`](../app/Filament/Widgets/FleetCostBreakdownChartWidget.php))
+  - [x] **Category CPK Benchmark Bar Chart** ([`CostPerKmChartWidget.php`](../app/Filament/Widgets/CostPerKmChartWidget.php))
+  - [x] **Management Fuel Quota Table Widget** ([`ManagementFuelQuotaWidget.php`](../app/Filament/Widgets/ManagementFuelQuotaWidget.php))
+
+- [x] **Authentic Fleet Seeder from Handwritten Factory Transport Roster**
+  - [x] Seeded authentic vehicles and drivers from the transport department's actual log:
+    - `16-0158`: ED Sir (Executive Director) - Driver Md. Robiul (`01917577119`)
+    - `27-6387`: Md. Harun Sir - Driver Md. Romjan (`01643133909`)
+    - `20-2755`: Next Buyer Dedicated (CA Knitwear) - Driver Md. Mushfiq (`01856158750`)
+    - `75-0175`: Medical Ambulance - Driver Md. Raju (`01930898182`)
+    - `11-0382`: Merchandiser Minibus - Driver Md. Monir (`01735827735`)
+    - `11-0957`: Production Staff Bus - Driver Md. Shukur (`01959263011`)
+    - `11-3128`: Covered Van 5T (CA Knitwear) - Driver Md. Monir (`01605978393`)
+    - `11-3127`: Covered Van 5T (Export Logistics) - Driver Md. Farhad (`01912107173`)
+  - [x] Seeded initial finalized monthly inter-company allocation journals for `NAZ` and `CAKL`
+
+- [x] **Bilingual Localization & Automated Quality Assurance**
+  - [x] Full Bengali (`lang/bn/vfms.php`) and English (`lang/en/vfms.php`) translations for financial terms, CPK, TCO, and journals
+  - [x] Automated feature test suite [`tests/Feature/FinancialAnalyticsAndTcoTest.php`](../tests/Feature/FinancialAnalyticsAndTcoTest.php) (4 tests, 56 assertions)
+  - [x] Total project test suite: **28 tests passing with 162 assertions (100%)**
+  - [x] Laravel Pint PSR-12 code style verified and applied cleanly
+

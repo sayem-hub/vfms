@@ -148,4 +148,18 @@ return [
     'quota_exceeded' => 'কোটা অতিক্রম করেছে',
     'dedicated_management_car' => 'ম্যানেজমেন্টের নির্ধারিত গাড়ি',
     'staff_commute_bus' => 'কর্মচারী পরিবহন বাস',
+
+    // Phase 5: Financial Management, CPK, TCO & Inter-Company Allocation
+    'financial_management' => 'আর্থিক ব্যবস্থাপনা ও বিশ্লেষণ',
+    'financial_analytics' => 'আর্থিক বিশ্লেষণ ও টিসিও (TCO)',
+    'cpk' => 'কস্ট পার কিমি (CPK)',
+    'cost_per_km' => 'প্রতি কিমি মোট পরিচালন ব্যয় (CPK)',
+    'tco' => 'টোটাল কস্ট অব ওনারশিপ (TCO)',
+    'lifetime_tco' => 'লাইফটাইম মোট ব্যয় (TCO)',
+    'capital_purchase_price' => 'গাড়ির মূল ক্রয়মূল্য (মূলধন ব্যয়)',
+    'repair_vs_replace' => 'মেরামত বনাম নতুন গাড়ি ক্রয় সুপারিশমালা',
+    'inter_company_allocation' => 'সিস্টার কনসার্ন অনুযায়ী খরচ বণ্টন',
+    'allocation_journal' => 'খরচ বণ্টন জার্নাল',
+    'journal_reference_no' => 'জার্নাল রেফারেন্স নম্বর',
+    'chargeable_total' => 'সর্বমোট চার্জযোগ্য ব্যয়',
 ];

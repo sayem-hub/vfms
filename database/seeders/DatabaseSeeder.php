@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
+use App\Models\CostAllocation;
 use App\Models\Driver;
 use App\Models\FactoryUnit;
 use App\Models\FixedRoute;
@@ -14,6 +15,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehicleCompliance;
 use App\Models\VehicleGateLog;
+use App\Services\Financial\CostAllocationService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -624,5 +626,201 @@ class DatabaseSeeder extends Seeder
                 'payment_method' => 'COMPANY_CREDIT_VOUCHER',
             ]
         );
+
+        // 12. Real Factory Fleet Vehicles & Drivers from Transport Concern's Handwritten Sheet
+        $realFleet = [
+            [
+                'reg' => 'DHAKA METRO-GA-16-0158',
+                'type' => 'SEDAN_CAR',
+                'brand' => 'Toyota',
+                'model' => 'Allion A15',
+                'official' => 'Executive Director (ED Sir)',
+                'driver_name' => 'Md. Robiul',
+                'driver_phone' => '01917577119',
+                'driver_id_card' => 'EMP-DRV-1012',
+                'license' => 'DL-160158-99',
+                'quota' => 250.0,
+                'odo' => 74200,
+                'purchase_price' => 3600000.00,
+                'purchase_date' => '2022-03-10',
+                'company' => $apex,
+            ],
+            [
+                'reg' => 'DHAKA METRO-GA-27-6387',
+                'type' => 'SEDAN_CAR',
+                'brand' => 'Toyota',
+                'model' => 'Corolla Altis',
+                'official' => 'Md. Harun Sir',
+                'driver_name' => 'Md. Romjan',
+                'driver_phone' => '01643133909',
+                'driver_id_card' => 'EMP-DRV-1013',
+                'license' => 'DL-276387-88',
+                'quota' => 200.0,
+                'odo' => 58900,
+                'purchase_price' => 2500000.00,
+                'purchase_date' => '2023-05-14',
+                'company' => $apex,
+            ],
+            [
+                'reg' => 'DHAKA METRO-GA-20-2755',
+                'type' => 'MICROBUS',
+                'brand' => 'Toyota',
+                'model' => 'HiAce GL (Buyer Escort)',
+                'official' => 'Next Buyer Dedicated (CA Knitwear)',
+                'driver_name' => 'Md. Mushfiq',
+                'driver_phone' => '01856158750',
+                'driver_id_card' => 'EMP-DRV-1014',
+                'license' => 'DL-202755-77',
+                'quota' => 220.0,
+                'odo' => 86400,
+                'purchase_price' => 3400000.00,
+                'purchase_date' => '2022-07-20',
+                'company' => $cakl,
+            ],
+            [
+                'reg' => 'DHAKA METRO-CHA-75-0175',
+                'type' => 'AMBULANCE',
+                'brand' => 'Toyota',
+                'model' => 'HiAce Medical Spec',
+                'official' => 'Factory Medical Unit (Ambulance)',
+                'driver_name' => 'Md. Raju',
+                'driver_phone' => '01930898182',
+                'driver_id_card' => 'EMP-DRV-1015',
+                'license' => 'DL-750175-66',
+                'quota' => null,
+                'odo' => 21300,
+                'purchase_price' => 2700000.00,
+                'purchase_date' => '2024-01-15',
+                'company' => $apex,
+            ],
+            [
+                'reg' => 'DHAKA METRO-JA-11-0382',
+                'type' => 'STAFF_BUS',
+                'brand' => 'Isuzu',
+                'model' => 'Minibus 32-Seater',
+                'official' => 'Merchandiser Commute Staff Bus',
+                'driver_name' => 'Md. Monir',
+                'driver_phone' => '01735827735',
+                'driver_id_card' => 'EMP-DRV-1016',
+                'license' => 'DL-110382-55',
+                'quota' => null,
+                'odo' => 112500,
+                'purchase_price' => 3800000.00,
+                'purchase_date' => '2021-11-05',
+                'company' => $apex,
+            ],
+            [
+                'reg' => 'DHAKA METRO-BA-11-0957',
+                'type' => 'STAFF_BUS',
+                'brand' => 'Hino',
+                'model' => 'AK1J 52-Seater',
+                'official' => 'Production Staff Commute Bus',
+                'driver_name' => 'Md. Shukur',
+                'driver_phone' => '01959263011',
+                'driver_id_card' => 'EMP-DRV-1017',
+                'license' => 'DL-110957-44',
+                'quota' => null,
+                'odo' => 156800,
+                'purchase_price' => 4600000.00,
+                'purchase_date' => '2020-08-18',
+                'company' => $apex,
+            ],
+            [
+                'reg' => 'DHAKA METRO-TA-11-3128',
+                'type' => 'COVERED_VAN_5T',
+                'brand' => 'Isuzu',
+                'model' => 'Forward 5T Fabric Logistics',
+                'official' => 'CA Knitwear Central Logistics',
+                'driver_name' => 'Md. Monir',
+                'driver_phone' => '01605978393',
+                'driver_id_card' => 'EMP-DRV-1018',
+                'license' => 'DL-113128-33',
+                'quota' => null,
+                'odo' => 94200,
+                'purchase_price' => 2900000.00,
+                'purchase_date' => '2022-09-25',
+                'company' => $cakl,
+            ],
+            [
+                'reg' => 'DHAKA METRO-TA-11-3127',
+                'type' => 'COVERED_VAN_5T',
+                'brand' => 'Isuzu',
+                'model' => 'Forward 5T Garments Export',
+                'official' => 'Finished Goods Export Van',
+                'driver_name' => 'Md. Farhad',
+                'driver_phone' => '01912107173',
+                'driver_id_card' => 'EMP-DRV-1019',
+                'license' => 'DL-113127-22',
+                'quota' => null,
+                'odo' => 105400,
+                'purchase_price' => 2850000.00,
+                'purchase_date' => '2022-10-12',
+                'company' => $apex,
+            ],
+        ];
+
+        foreach ($realFleet as $item) {
+            $v = Vehicle::firstOrCreate(
+                ['registration_no' => $item['reg']],
+                [
+                    'company_id' => $item['company']->id,
+                    'factory_unit_id' => $unitGazipur->id,
+                    'vehicle_type' => $item['type'],
+                    'usage_category' => str_contains($item['type'], 'STAFF_BUS') ? 'STAFF_COMMUTE_BUS' : (str_contains($item['type'], 'COVERED_VAN') ? 'FACTORY_LOGISTICS' : (str_contains($item['type'], 'AMBULANCE') ? 'EMERGENCY_AMBULANCE' : 'DEDICATED_MANAGEMENT')),
+                    'dedicated_to_official' => $item['official'],
+                    'ownership_type' => 'COMPANY_OWNED',
+                    'fuel_type' => str_contains($item['type'], 'VAN') || str_contains($item['type'], 'BUS') ? 'DIESEL' : 'OCTANE',
+                    'fuel_payer' => $item['quota'] ? 'MONTHLY_QUOTA' : 'COMPANY',
+                    'monthly_fuel_quota_liters' => $item['quota'],
+                    'current_odometer' => $item['odo'],
+                    'purchase_price' => $item['purchase_price'],
+                    'purchase_date' => $item['purchase_date'],
+                    'brand' => $item['brand'],
+                    'model_name' => $item['model'],
+                    'status' => 'AVAILABLE',
+                ]
+            );
+
+            Driver::firstOrCreate(
+                ['license_number' => $item['license']],
+                [
+                    'company_id' => $item['company']->id,
+                    'factory_unit_id' => $unitGazipur->id,
+                    'name' => $item['driver_name'],
+                    'office_id_card' => $item['driver_id_card'],
+                    'phone' => $item['driver_phone'],
+                    'license_type' => str_contains($item['type'], 'BUS') || str_contains($item['type'], 'VAN') ? 'HEAVY' : 'LIGHT',
+                    'license_expiry_date' => now()->addMonths(16),
+                    'employment_type' => 'COMPANY_PAYROLL',
+                    'salary' => 24000.0,
+                    'current_vehicle_id' => $v->id,
+                    'preferred_locale' => 'bn',
+                ]
+            );
+        }
+
+        // 13. Generate Sample Finalized Inter-Company Allocation Journal
+        $allocationService = app(CostAllocationService::class);
+        $period = now()->format('Y-m');
+
+        if (! CostAllocation::where('company_id', $apex->id)->where('allocation_period', $period)->exists()) {
+            $allocationService->generateAndSaveJournal(
+                $apex->id,
+                $period,
+                $unitGazipur->id,
+                $admin->id,
+                'Monthly central transport allocation journal for N.A.Z. Bangladesh Ltd'
+            );
+        }
+
+        if (! CostAllocation::where('company_id', $cakl->id)->where('allocation_period', $period)->exists()) {
+            $allocationService->generateAndSaveJournal(
+                $cakl->id,
+                $period,
+                $unitBhobanipur->id,
+                $admin->id,
+                'Monthly transport allocation journal for CA Knitwear Ltd'
+            );
+        }
     }
 }

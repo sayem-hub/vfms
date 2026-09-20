@@ -38,4 +38,9 @@ class Company extends Model
     {
         return $this->hasMany(TripRequest::class);
     }
+
+    public function costAllocations(): HasMany
+    {
+        return $this->hasMany(CostAllocation::class);
+    }
 }

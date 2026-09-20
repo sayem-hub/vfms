@@ -148,4 +148,18 @@ return [
     'quota_exceeded' => 'Quota Exceeded',
     'dedicated_management_car' => 'Dedicated Management Car',
     'staff_commute_bus' => 'Staff Commute Bus',
+
+    // Phase 5: Financial Management, CPK, TCO & Inter-Company Allocation
+    'financial_management' => 'Financial Management & Analytics',
+    'financial_analytics' => 'Financial Analytics & TCO',
+    'cpk' => 'Cost Per KM (CPK)',
+    'cost_per_km' => 'Total Operating Cost Per KM (CPK)',
+    'tco' => 'Total Cost of Ownership (TCO)',
+    'lifetime_tco' => 'Lifetime Total Cost of Ownership (TCO)',
+    'capital_purchase_price' => 'Capital Purchase Price',
+    'repair_vs_replace' => 'Repair vs Replace Recommendation',
+    'inter_company_allocation' => 'Inter-Company Cost Allocation',
+    'allocation_journal' => 'Cost Allocation Journal',
+    'journal_reference_no' => 'Journal Reference No',
+    'chargeable_total' => 'Total Chargeable Cost',
 ];
