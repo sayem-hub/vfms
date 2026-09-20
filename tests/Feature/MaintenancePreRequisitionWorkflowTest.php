@@ -108,6 +108,7 @@ test('admin maintenance records filament page renders successfully without error
     $admin = User::create([
         'name' => 'Super Admin',
         'email' => 'admin@example.com',
+        'role' => 'ADMIN',
         'password' => bcrypt('password'),
     ]);
 
@@ -121,6 +122,7 @@ test('admin maintenance records create and edit pages render successfully withou
     $admin = User::create([
         'name' => 'Super Admin',
         'email' => 'admin@example.com',
+        'role' => 'ADMIN',
         'password' => bcrypt('password'),
     ]);
 

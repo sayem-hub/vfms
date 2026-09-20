@@ -75,8 +75,8 @@
                         </nav>
                     </div>
 
-                    <!-- Right Controls: Language Switcher & Admin Link -->
-                    <div class="flex items-center space-x-3">
+                    <!-- Right Controls: Language Switcher, User Status & Logout -->
+                    <div class="flex items-center space-x-2 sm:space-x-3">
                         <!-- Language Toggle -->
                         <div class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-100 text-xs font-semibold">
                             <a href="{{ url('/locale/bn') }}" 
@@ -89,29 +89,68 @@
                             </a>
                         </div>
 
-                        <!-- Admin Panel Button -->
-                        <a href="{{ url('/admin') }}" 
-                           class="hidden sm:inline-flex items-center px-3.5 py-1.5 border border-transparent text-xs font-bold rounded-lg text-white bg-slate-900 hover:bg-orange-600 transition shadow-xs">
-                            ⚙️ {{ app()->getLocale() === 'bn' ? 'অ্যাডমিন ড্যাশবোর্ড' : 'Admin Panel' }}
-                        </a>
+                        @auth
+                            <!-- Logged In User Pill -->
+                            <div class="hidden lg:flex items-center gap-2 pl-2 border-l border-slate-200 text-xs">
+                                <span class="w-7 h-7 rounded-full bg-slate-900 text-white font-bold flex items-center justify-center">
+                                    {{ auth()->user()->initials() }}
+                                </span>
+                                <div>
+                                    <div class="font-bold text-slate-800 leading-tight truncate max-w-[130px]">{{ auth()->user()->name }}</div>
+                                    <div class="text-[10px] font-mono text-orange-600 font-bold">{{ auth()->user()->role }}</div>
+                                </div>
+                            </div>
+
+                            @if(auth()->user()->isAdmin() || auth()->user()->isTransportOfficer())
+                                <a href="{{ url('/admin') }}" 
+                                   class="hidden sm:inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-bold rounded-lg text-white bg-slate-900 hover:bg-orange-600 transition shadow-xs">
+                                    ⚙️ {{ app()->getLocale() === 'bn' ? 'অ্যাডমিন' : 'Admin' }}
+                                </a>
+                            @endif
+
+                            <a href="{{ route('logout') }}"
+                               class="hidden sm:inline-flex items-center px-2.5 py-1.5 border border-slate-200 text-xs font-bold rounded-lg text-slate-600 hover:text-red-700 hover:bg-red-50 transition">
+                                🚪 {{ app()->getLocale() === 'bn' ? 'লগআউট' : 'Logout' }}
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" 
+                               class="inline-flex items-center px-3.5 py-1.5 border border-transparent text-xs font-bold rounded-lg text-white bg-orange-600 hover:bg-orange-700 transition shadow-xs">
+                                🔑 {{ app()->getLocale() === 'bn' ? 'লগইন' : 'Field Login' }}
+                            </a>
+                        @endauth
                     </div>
                 </div>
             </div>
 
             <!-- Mobile Navigation Strip -->
-            <div class="md:hidden border-t border-slate-100 bg-slate-50 px-4 py-2 flex justify-around text-xs font-medium">
-                <a href="{{ route('portal.requisitions') }}" class="{{ request()->routeIs('portal.requisitions') ? 'text-orange-700 font-bold' : 'text-slate-600' }}">
-                    📝 {{ app()->getLocale() === 'bn' ? 'রিকুইজিশন' : 'Requisitions' }}
+            <div class="md:hidden border-t border-slate-100 bg-white px-2 py-1.5 flex justify-around text-xs font-semibold shadow-inner">
+                <a href="{{ route('portal.requests') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.requests') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                    <span class="text-base">📝</span>
+                    <span>{{ app()->getLocale() === 'bn' ? 'ট্রিপ রিকোয়েস্ট' : 'Requests' }}</span>
                 </a>
-                <a href="{{ route('portal.gate-pass') }}" class="{{ request()->routeIs('portal.gate-pass') ? 'text-orange-700 font-bold' : 'text-slate-600' }}">
-                    🛡️ {{ app()->getLocale() === 'bn' ? 'গেট পাস' : 'Gate Pass' }}
+                <a href="{{ route('portal.gate-pass') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.gate-pass') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                    <span class="text-base">🛡️</span>
+                    <span>{{ app()->getLocale() === 'bn' ? 'গেট পাস' : 'Gate Pass' }}</span>
                 </a>
-                <a href="{{ route('portal.driver') }}" class="{{ request()->routeIs('portal.driver') ? 'text-orange-700 font-bold' : 'text-slate-600' }}">
-                    🛞 {{ app()->getLocale() === 'bn' ? 'ড্রাইভার' : 'Driver' }}
+                <a href="{{ route('portal.driver') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.driver') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                    <span class="text-base">🛞</span>
+                    <span>{{ app()->getLocale() === 'bn' ? 'ড্রাইভার' : 'Driver' }}</span>
                 </a>
-                <a href="{{ url('/admin') }}" class="text-slate-700 font-semibold">
-                    ⚙️ {{ app()->getLocale() === 'bn' ? 'অ্যাডমিন' : 'Admin' }}
+                <a href="{{ route('portal.mobile') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.mobile') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                    <span class="text-base">📱</span>
+                    <span>{{ app()->getLocale() === 'bn' ? 'টার্মিনাল' : 'Mobile' }}</span>
                 </a>
+                @auth
+                    <a href="{{ route('logout') }}" class="flex flex-col items-center py-1 px-2 rounded-lg text-slate-500 hover:text-red-600">
+                        <span class="text-base">🚪</span>
+                        <span>{{ app()->getLocale() === 'bn' ? 'লগআউট' : 'Logout' }}</span>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="flex flex-col items-center py-1 px-2 rounded-lg text-orange-600 font-bold">
+                        <span class="text-base">🔑</span>
+                        <span>{{ app()->getLocale() === 'bn' ? 'লগইন' : 'Login' }}</span>
+                    </a>
+                @endauth
             </div>
         </header>
 

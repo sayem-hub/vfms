@@ -1,0 +1,10 @@
+{
+    "agents": [
+        "antigravity"
+    ],
+    "guidelines": true,
+    "packages": [
+        "livewire/blaze",
+        "nativephp/mobile"
+    ]
+}

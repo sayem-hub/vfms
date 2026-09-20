@@ -13,6 +13,8 @@ uses(RefreshDatabase::class);
 
 test('gate pass terminal renders successfully', function () {
     app()->setLocale('bn');
+    $guard = User::factory()->create(['role' => 'SECURITY_GUARD']);
+    $this->actingAs($guard);
     $response = $this->get('/portal/gate-pass');
     $response->assertOk();
     $response->assertSee('সিকিউরিটি গেট পাস টার্মিনাল');
@@ -20,7 +22,8 @@ test('gate pass terminal renders successfully', function () {
 
 test('security guard can record gate out and gate in', function () {
     $company = Company::create(['name' => 'Apex Knit', 'code' => 'AKC']);
-    $user = User::create(['name' => 'Guard', 'email' => 'guard@example.com', 'password' => bcrypt('password')]);
+    $user = User::factory()->create(['role' => 'SECURITY_GUARD']);
+    $this->actingAs($user);
     $vehicle = Vehicle::create([
         'company_id' => $company->id,
         'registration_no' => 'DHAKA-METRO-CHA-99-8877',

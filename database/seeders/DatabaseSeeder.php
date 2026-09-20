@@ -18,6 +18,7 @@ use App\Models\VehicleGateLog;
 use App\Services\Financial\CostAllocationService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -26,51 +27,120 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Key Role Users (Admin, Admin Head, Transport Incharge, Store Officer, Cashier)
+        // 1. Create Key Role Users (Admin, Admin Head, Transport Incharge, Store Officer, Cashier, Security Guard)
         $admin = User::firstOrCreate(
             ['email' => 'admin@vfms.com'],
             [
                 'name' => 'Transport General Manager',
+                'role' => 'ADMIN',
+                'employee_id' => 'EMP-ADM-001',
+                'phone' => '01711000000',
                 'password' => Hash::make('password'),
+                'pin' => Hash::make('1234'),
                 'preferred_locale' => 'bn',
             ]
         );
+        $admin->update([
+            'role' => 'ADMIN',
+            'employee_id' => 'EMP-ADM-001',
+            'phone' => '01711000000',
+            'pin' => Hash::make('1234'),
+        ]);
 
         $adminHead = User::firstOrCreate(
             ['email' => 'adminhead@vfms.com'],
             [
                 'name' => 'Head of Administration (NZ Group)',
+                'role' => 'ADMIN',
+                'employee_id' => 'EMP-ADM-002',
+                'phone' => '01711000004',
                 'password' => Hash::make('password'),
+                'pin' => Hash::make('1234'),
                 'preferred_locale' => 'bn',
             ]
         );
+        $adminHead->update([
+            'role' => 'ADMIN',
+            'employee_id' => 'EMP-ADM-002',
+            'phone' => '01711000004',
+            'pin' => Hash::make('1234'),
+        ]);
 
         $transportIncharge = User::firstOrCreate(
             ['email' => 'transport@vfms.com'],
             [
                 'name' => 'Transport Incharge (BK Bari Plant)',
+                'role' => 'TRANSPORT_OFFICER',
+                'employee_id' => 'EMP-TRN-001',
+                'phone' => '01711000003',
                 'password' => Hash::make('password'),
+                'pin' => Hash::make('1234'),
                 'preferred_locale' => 'bn',
             ]
         );
+        $transportIncharge->update([
+            'role' => 'TRANSPORT_OFFICER',
+            'employee_id' => 'EMP-TRN-001',
+            'phone' => '01711000003',
+            'pin' => Hash::make('1234'),
+        ]);
 
         $storeOfficer = User::firstOrCreate(
             ['email' => 'store@vfms.com'],
             [
                 'name' => 'Central Store Officer',
+                'role' => 'EMPLOYEE',
+                'employee_id' => 'EMP-STR-001',
+                'phone' => '01711000005',
                 'password' => Hash::make('password'),
+                'pin' => Hash::make('1234'),
                 'preferred_locale' => 'bn',
             ]
         );
+        $storeOfficer->update([
+            'role' => 'EMPLOYEE',
+            'employee_id' => 'EMP-STR-001',
+            'phone' => '01711000005',
+            'pin' => Hash::make('1234'),
+        ]);
 
         $cashier = User::firstOrCreate(
             ['email' => 'cashier@vfms.com'],
             [
                 'name' => 'Factory Central Cashier',
+                'role' => 'EMPLOYEE',
+                'employee_id' => 'EMP-CSH-001',
+                'phone' => '01711000006',
                 'password' => Hash::make('password'),
+                'pin' => Hash::make('1234'),
                 'preferred_locale' => 'bn',
             ]
         );
+        $cashier->update([
+            'role' => 'EMPLOYEE',
+            'employee_id' => 'EMP-CSH-001',
+            'phone' => '01711000006',
+            'pin' => Hash::make('1234'),
+        ]);
+
+        $guardGazipur = User::firstOrCreate(
+            ['email' => 'guard.gazipur@vfms.com'],
+            [
+                'name' => 'BK Bari Factory Gate Security',
+                'role' => 'SECURITY_GUARD',
+                'employee_id' => 'GUARD-GZP-01',
+                'phone' => '01711999001',
+                'password' => Hash::make('password'),
+                'pin' => Hash::make('1234'),
+                'preferred_locale' => 'bn',
+            ]
+        );
+        $guardGazipur->update([
+            'role' => 'SECURITY_GUARD',
+            'employee_id' => 'GUARD-GZP-01',
+            'phone' => '01711999001',
+            'pin' => Hash::make('1234'),
+        ]);
 
         // 2. Create Companies & Units
         $apex = Company::firstOrCreate(
@@ -821,6 +891,37 @@ class DatabaseSeeder extends Seeder
                 $admin->id,
                 'Monthly transport allocation journal for CA Knitwear Ltd'
             );
+        }
+
+        // 14. Ensure All Drivers Have User Accounts with Role DRIVER and PIN 1234
+        foreach (Driver::all() as $drv) {
+            $empId = $drv->office_id_card ?: "EMP-DRV-{$drv->id}";
+            $email = strtolower(Str::slug($empId)).'@vfms.local';
+
+            $drvUser = User::firstOrCreate(
+                ['employee_id' => $empId],
+                [
+                    'name' => $drv->name,
+                    'email' => $email,
+                    'role' => 'DRIVER',
+                    'employee_id' => $empId,
+                    'phone' => $drv->phone,
+                    'password' => Hash::make('password'),
+                    'pin' => Hash::make('1234'),
+                    'preferred_locale' => 'bn',
+                ]
+            );
+
+            $drvUser->update([
+                'role' => 'DRIVER',
+                'phone' => $drv->phone,
+                'pin' => Hash::make('1234'),
+            ]);
+
+            $drv->update([
+                'user_id' => $drvUser->id,
+                'office_id_card' => $empId,
+            ]);
         }
     }
 }

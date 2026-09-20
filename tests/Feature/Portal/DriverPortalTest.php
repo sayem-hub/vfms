@@ -15,6 +15,7 @@ uses(RefreshDatabase::class);
 test('driver portal renders successfully', function () {
     app()->setLocale('bn');
     $company = Company::create(['name' => 'Apex Knit', 'code' => 'AKC']);
+    $user = User::factory()->create(['role' => 'ADMIN']);
     $driver = Driver::create([
         'company_id' => $company->id,
         'name' => 'Driver Salam',
@@ -23,6 +24,7 @@ test('driver portal renders successfully', function () {
         'phone' => '01712345678',
     ]);
 
+    $this->actingAs($user);
     $response = $this->get('/portal/driver');
     $response->assertOk();
     $response->assertSee('জ্বালানী ও ট্রিপ খরচ এন্ট্রি');
@@ -30,7 +32,8 @@ test('driver portal renders successfully', function () {
 
 test('driver can submit fuel refill log and recalculate settlement', function () {
     $company = Company::create(['name' => 'Apex Knit', 'code' => 'AKC']);
-    $user = User::create(['name' => 'Manager', 'email' => 'mgr@example.com', 'password' => bcrypt('password')]);
+    $user = User::factory()->create(['role' => 'ADMIN']);
+    $this->actingAs($user);
     $vehicle = Vehicle::create([
         'company_id' => $company->id,
         'registration_no' => 'DHAKA-METRO-GA-11-2233',

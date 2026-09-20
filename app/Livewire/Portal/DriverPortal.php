@@ -10,6 +10,7 @@ use App\Models\Vehicle;
 use App\Services\Audit\FuelEfficiencyService;
 use App\Services\Settlement\TripExpenseSettlementService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -69,7 +70,27 @@ class DriverPortal extends Component
 
     public function mount(): void
     {
-        // Default to first active driver
+        $user = Auth::user();
+
+        // Enforce Driver Role Scoping
+        if ($user?->isDriver()) {
+            $driver = $user->driver ?? Driver::where('user_id', $user->id)->first();
+            if (! $driver && $user->employee_id) {
+                $driver = Driver::where('office_id_card', $user->employee_id)->first();
+            }
+
+            if (! $driver) {
+                abort(403, app()->getLocale() === 'bn'
+                    ? 'আপনার ইউজার অ্যাকাউন্টের সাথে কোনো ড্রাইভার প্রোফাইল যুক্ত নেই। অ্যাডমিনের সাথে যোগাযোগ করুন।'
+                    : 'No driver profile linked to your user account.');
+            }
+
+            $this->selectDriver($driver->id);
+
+            return;
+        }
+
+        // For fleet administrators or transport officers, default to first active driver
         $firstDriver = Driver::where('is_active', true)->first();
         if ($firstDriver) {
             $this->selectDriver($firstDriver->id);
@@ -78,6 +99,22 @@ class DriverPortal extends Component
 
     public function selectDriver(int $driverId): void
     {
+        $user = Auth::user();
+
+        // Strict Driver Isolation Check: A driver can never select or inspect another driver's ID
+        if ($user?->isDriver()) {
+            $linkedDriver = $user->driver ?? Driver::where('user_id', $user->id)->first();
+            if (! $linkedDriver && $user->employee_id) {
+                $linkedDriver = Driver::where('office_id_card', $user->employee_id)->first();
+            }
+
+            if ($linkedDriver && $driverId !== $linkedDriver->id) {
+                abort(403, app()->getLocale() === 'bn'
+                    ? 'অননুমোদিত অ্যাক্সেস। আপনি শুধুমাত্র আপনার নিজস্ব তথ্য দেখতে পারবেন।'
+                    : 'Access denied. You can only view your own assigned records.');
+            }
+        }
+
         $this->selectedDriverId = $driverId;
         $driver = Driver::with('currentVehicle')->find($driverId);
 
@@ -146,38 +183,39 @@ class DriverPortal extends Component
             'receipt_memo_photo' => $receiptPath,
         ]);
 
-        // Audit burn rate
-        $efficiencyService->auditFuelLog($fuelLog);
+        $fuelLog->save();
 
-        // Update settlement fuel expense
-        if ($this->activeTripId) {
-            $settlement = TripExpenseSettlement::firstOrNew(['trip_request_id' => $this->activeTripId]);
-            $settlement->driver_id = $driver->id;
-            $settlement->total_fuel_expense = FuelLog::where('trip_request_id', $this->activeTripId)->sum('total_cost');
-            $settlement->recalculate();
-            $settlement->save();
+        // Update vehicle odometer if higher
+        if ($this->fuel_odometer > $vehicle->current_odometer) {
+            $vehicle->update(['current_odometer' => $this->fuel_odometer]);
         }
 
-        if ($fuelLog->is_efficiency_anomaly) {
-            $this->feedbackType = 'warning';
-            $this->feedbackMessage = app()->getLocale() === 'bn'
-                ? "জ্বালানী রিফিল সফলভাবে সংরক্ষিত হয়েছে। তবে মাইলেজ পূর্ববর্তী গড়ের চেয়ে ২০% কম ({$fuelLog->calculated_km_per_liter} কিমি/লিটার)।"
-                : "Fuel saved successfully. Flagged for efficiency drop ({$fuelLog->calculated_km_per_liter} KM/L).";
-        } else {
-            $this->feedbackType = 'success';
-            $this->feedbackMessage = app()->getLocale() === 'bn'
-                ? "জ্বালানী রিফিল সফলভাবে সংরক্ষিত হয়েছে। মাইলেজ স্বাভাবিক: {$fuelLog->calculated_km_per_liter} কিমি/লিটার।"
-                : "Fuel log recorded successfully. Calculated: {$fuelLog->calculated_km_per_liter} KM/L.";
-        }
+        // Run automated audit and discrepancy check
+        $auditLog = $efficiencyService->auditFuelLog($fuelLog);
 
-        $this->reset(['station_name', 'fuel_quantity', 'fuel_unit_price', 'dispenser_photo', 'odometer_photo', 'receipt_memo_photo']);
+        $this->feedbackType = $auditLog->is_efficiency_anomaly ? 'warning' : 'success';
+        $this->feedbackMessage = $auditLog->is_efficiency_anomaly
+            ? (app()->getLocale() === 'bn'
+                ? "ফুয়েল এন্ট্রি সংরক্ষিত হয়েছে। সতর্কতা: অডিট রাডারে অসঙ্গতি শনাক্ত হয়েছে ({$auditLog->calculated_km_per_liter} KM/L)।"
+                : "Fuel log recorded with audit alert ({$auditLog->calculated_km_per_liter} KM/L).")
+            : (app()->getLocale() === 'bn'
+                ? 'ফুয়েল এন্ট্রি ও অডিট ভেরিফিকেশন সফল হয়েছে।'
+                : 'Fuel log submitted and audit verified successfully.');
+
+        // Reset inputs
+        $this->station_name = '';
+        $this->fuel_quantity = null;
+        $this->fuel_unit_price = null;
+        $this->dispenser_photo = null;
+        $this->odometer_photo = null;
+        $this->receipt_memo_photo = null;
     }
 
     public function submitSettlement(TripExpenseSettlementService $settlementService): void
     {
         if (! $this->activeTripId) {
             $this->feedbackType = 'warning';
-            $this->feedbackMessage = 'No active trip to settle.';
+            $this->feedbackMessage = app()->getLocale() === 'bn' ? 'কোনো সক্রিয় ট্রিপ পাওয়া যায়নি।' : 'No active trip to settle.';
 
             return;
         }
@@ -202,8 +240,20 @@ class DriverPortal extends Component
 
     public function render(): View
     {
-        $drivers = Driver::where('is_active', true)->with('currentVehicle')->get();
-        $driver = Driver::with('currentVehicle')->find($this->selectedDriverId);
+        $user = Auth::user();
+        $isDriverUser = $user?->isDriver();
+
+        if ($isDriverUser) {
+            $driver = $user->driver ?? Driver::where('user_id', $user->id)->first();
+            if (! $driver && $user->employee_id) {
+                $driver = Driver::where('office_id_card', $user->employee_id)->first();
+            }
+            $drivers = $driver ? collect([$driver]) : collect();
+        } else {
+            $drivers = Driver::where('is_active', true)->with('currentVehicle')->get();
+            $driver = Driver::with('currentVehicle')->find($this->selectedDriverId);
+        }
+
         $trip = null;
         $fuelLogs = collect();
         $totalFuelCost = 0.0;
@@ -236,6 +286,7 @@ class DriverPortal extends Component
         return view('livewire.portal.driver-portal', [
             'drivers' => $drivers,
             'driver' => $driver,
+            'isDriverUser' => $isDriverUser,
             'trip' => $trip,
             'fuelLogs' => $fuelLogs,
             'totalFuelCost' => $totalFuelCost,
