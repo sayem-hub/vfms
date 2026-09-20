@@ -56,22 +56,40 @@
 
                         <!-- Navigation Links -->
                         <nav class="hidden md:flex space-x-1 pl-6">
-                            <a href="{{ route('portal.requests') }}" 
-                               class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.requests') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                                📝 {{ app()->getLocale() === 'bn' ? 'ট্রিপ রিকোয়েস্ট' : 'Trip Requests' }}
-                            </a>
-                            <a href="{{ route('portal.gate-pass') }}" 
-                               class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.gate-pass') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                                🛡️ {{ app()->getLocale() === 'bn' ? 'গেট পাস টার্মিনাল' : 'Security Gate-Pass' }}
-                            </a>
-                            <a href="{{ route('portal.driver') }}" 
-                               class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.driver') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                                🛞 {{ app()->getLocale() === 'bn' ? 'ড্রাইভার পোর্টাল' : 'Driver Portal' }}
-                            </a>
-                            <a href="{{ route('portal.mobile') }}" 
-                               class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.mobile') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                                📱 {{ app()->getLocale() === 'bn' ? 'মোবাইল টার্মিনাল' : 'Mobile App' }}
-                            </a>
+                            @php
+                                $currentUser = auth()->user();
+                                $isDriver = $currentUser?->isDriver();
+                                $isGuard = $currentUser?->isSecurityGuard();
+                                $isAdminOrTransport = $currentUser?->isAdmin() || $currentUser?->isTransportOfficer();
+                            @endphp
+
+                            @if(!$isGuard)
+                                <a href="{{ route('portal.requests') }}" 
+                                   class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.requests') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                    📝 {{ app()->getLocale() === 'bn' ? 'ট্রিপ রিকোয়েস্ট' : 'Trip Requests' }}
+                                </a>
+                            @endif
+
+                            @if($isGuard || $isAdminOrTransport)
+                                <a href="{{ route('portal.gate-pass') }}" 
+                                   class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.gate-pass') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                    🛡️ {{ app()->getLocale() === 'bn' ? 'গেট পাস টার্মিনাল' : 'Security Gate-Pass' }}
+                                </a>
+                            @endif
+
+                            @if($isDriver || $isAdminOrTransport)
+                                <a href="{{ route('portal.driver') }}" 
+                                   class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.driver') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                    🛞 {{ app()->getLocale() === 'bn' ? 'ড্রাইভার পোর্টাল' : 'Driver Portal' }}
+                                </a>
+                            @endif
+
+                            @if($isAdminOrTransport)
+                                <a href="{{ route('portal.mobile') }}" 
+                                   class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('portal.mobile') ? 'bg-orange-50 text-orange-700 font-semibold border-b-2 border-orange-600' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                                    📱 {{ app()->getLocale() === 'bn' ? 'মোবাইল টার্মিনাল' : 'Mobile App' }}
+                                </a>
+                            @endif
                         </nav>
                     </div>
 
@@ -122,24 +140,43 @@
                 </div>
             </div>
 
-            <!-- Mobile Navigation Strip -->
+            <!-- Mobile Navigation Strip (Role-Filtered) -->
             <div class="md:hidden border-t border-slate-100 bg-white px-2 py-1.5 flex justify-around text-xs font-semibold shadow-inner">
-                <a href="{{ route('portal.requests') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.requests') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
-                    <span class="text-base">📝</span>
-                    <span>{{ app()->getLocale() === 'bn' ? 'ট্রিপ রিকোয়েস্ট' : 'Requests' }}</span>
-                </a>
-                <a href="{{ route('portal.gate-pass') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.gate-pass') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
-                    <span class="text-base">🛡️</span>
-                    <span>{{ app()->getLocale() === 'bn' ? 'গেট পাস' : 'Gate Pass' }}</span>
-                </a>
-                <a href="{{ route('portal.driver') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.driver') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
-                    <span class="text-base">🛞</span>
-                    <span>{{ app()->getLocale() === 'bn' ? 'ড্রাইভার' : 'Driver' }}</span>
-                </a>
-                <a href="{{ route('portal.mobile') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.mobile') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
-                    <span class="text-base">📱</span>
-                    <span>{{ app()->getLocale() === 'bn' ? 'টার্মিনাল' : 'Mobile' }}</span>
-                </a>
+                @php
+                    $currentUser = auth()->user();
+                    $isDriver = $currentUser?->isDriver();
+                    $isGuard = $currentUser?->isSecurityGuard();
+                    $isAdminOrTransport = $currentUser?->isAdmin() || $currentUser?->isTransportOfficer();
+                @endphp
+
+                @if(!$isGuard)
+                    <a href="{{ route('portal.requests') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.requests') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                        <span class="text-base">📝</span>
+                        <span>{{ app()->getLocale() === 'bn' ? 'ট্রিপ রিকোয়েস্ট' : 'Requests' }}</span>
+                    </a>
+                @endif
+
+                @if($isGuard || $isAdminOrTransport)
+                    <a href="{{ route('portal.gate-pass') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.gate-pass') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                        <span class="text-base">🛡️</span>
+                        <span>{{ app()->getLocale() === 'bn' ? 'গেট পাস' : 'Gate Pass' }}</span>
+                    </a>
+                @endif
+
+                @if($isDriver || $isAdminOrTransport)
+                    <a href="{{ route('portal.driver') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.driver') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                        <span class="text-base">🛞</span>
+                        <span>{{ app()->getLocale() === 'bn' ? 'ড্রাইভার' : 'Driver' }}</span>
+                    </a>
+                @endif
+
+                @if($isAdminOrTransport)
+                    <a href="{{ route('portal.mobile') }}" class="flex flex-col items-center py-1 px-2 rounded-lg {{ request()->routeIs('portal.mobile') ? 'text-orange-700 font-bold bg-orange-50' : 'text-slate-600' }}">
+                        <span class="text-base">📱</span>
+                        <span>{{ app()->getLocale() === 'bn' ? 'টার্মিনাল' : 'Mobile' }}</span>
+                    </a>
+                @endif
+
                 @auth
                     <a href="{{ route('logout') }}" class="flex flex-col items-center py-1 px-2 rounded-lg text-slate-500 hover:text-red-600">
                         <span class="text-base">🚪</span>

@@ -67,6 +67,27 @@ class MobileTerminal extends Component
 
     public function mount(GeofenceVerificationService $geofenceService): void
     {
+        $user = auth()->user();
+
+        // Redirect drivers and guards to their dedicated role terminals
+        if ($user?->isDriver()) {
+            $this->redirect(route('portal.driver'), navigate: true);
+
+            return;
+        }
+
+        if ($user?->isSecurityGuard()) {
+            $this->redirect(route('portal.gate-pass'), navigate: true);
+
+            return;
+        }
+
+        if ($user?->isEmployee()) {
+            $this->redirect(route('portal.requests'), navigate: true);
+
+            return;
+        }
+
         // Default device ID if none set
         $this->deviceId = session('mobile_device_id', 'MOB-'.strtoupper(substr(md5(request()->userAgent() ?? 'agent'), 0, 8)));
 

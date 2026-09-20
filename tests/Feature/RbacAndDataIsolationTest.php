@@ -2,6 +2,7 @@
 
 use App\Livewire\Auth\FieldLogin;
 use App\Livewire\Portal\DriverPortal;
+use App\Livewire\Portal\MobileTerminal;
 use App\Models\Company;
 use App\Models\Driver;
 use App\Models\FactoryUnit;
@@ -211,4 +212,40 @@ test('navigation bar displays Trip Requests and no longer displays Requisitions'
     $responseEn->assertStatus(200);
     $responseEn->assertSee('Requests');
     $responseEn->assertDontSee('Requisitions');
+});
+
+test('driver only sees Driver Portal and Requests in navigation, hiding Gate Pass and Terminal', function () {
+    $this->actingAs($this->userRafiq);
+
+    $response = $this->withSession(['locale' => 'bn'])->get(route('portal.driver'));
+    $response->assertStatus(200);
+    $response->assertSee(route('portal.driver'));
+    $response->assertSee(route('portal.requests'));
+    $response->assertDontSee(route('portal.gate-pass'));
+    $response->assertDontSee(route('portal.mobile'));
+});
+
+test('security guard only sees Gate Pass in navigation, hiding Driver, Requests, and Terminal', function () {
+    $this->actingAs($this->userGuard);
+
+    $response = $this->withSession(['locale' => 'bn'])->get(route('portal.gate-pass'));
+    $response->assertStatus(200);
+    $response->assertSee(route('portal.gate-pass'));
+    $response->assertDontSee(route('portal.driver'));
+    $response->assertDontSee(route('portal.requests'));
+    $response->assertDontSee(route('portal.mobile'));
+});
+
+test('driver accessing portal.mobile is automatically redirected to portal.driver', function () {
+    $this->actingAs($this->userRafiq);
+
+    Livewire::test(MobileTerminal::class)
+        ->assertRedirect(route('portal.driver'));
+});
+
+test('security guard accessing portal.mobile is automatically redirected to portal.gate-pass', function () {
+    $this->actingAs($this->userGuard);
+
+    Livewire::test(MobileTerminal::class)
+        ->assertRedirect(route('portal.gate-pass'));
 });
